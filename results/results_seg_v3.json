@@ -1,0 +1,18 @@
+{
+ "figshare_test_patients": 43,
+ "figshare_test_images": 561,
+ "dice_mean": 0.7899739812261583,
+ "dice_median": 0.8911042945620365,
+ "share_dice_over_0_5": 0.8841354723707665,
+ "dice_by_class": {
+  "Глиома": 0.6973540925462772,
+  "Менингиома": 0.903442774529001,
+  "Гипофиз": 0.8361003388490851
+ },
+ "org_test_images_with_mask": 990,
+ "org_dice_mean": 0.8188033026733734,
+ "org_share_dice_over_0_5": 0.9101010101010101,
+ "end_to_end_found_and_localized": 0.896969696969697,
+ "healthy_test_images": 332,
+ "healthy_false_contour_rate": 0.0
+}

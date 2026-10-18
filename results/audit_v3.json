@@ -1,0 +1,12 @@
+{
+ "files": 9150,
+ "groups": 790,
+ "biggest_group": 111,
+ "exact_dup_groups": 814,
+ "org_images_matched_to_figshare": 5936,
+ "figshare_patients_found": 231,
+ "test_images": 1871,
+ "test_with_copy_in_train": 1450,
+ "test_with_copy_or_same_patient_in_train": 1642,
+ "label_conflict_images": 0
+}
