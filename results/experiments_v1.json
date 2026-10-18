@@ -1,0 +1,386 @@
+{
+ "base": {
+  "what": "Основная модель (EfficientNet-B0, ImageNet, аугментации, 256 px)",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 42,
+  "epochs": 15,
+  "val_macro_f1": 0.9190775202047909,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.8778625954198473,
+   "macro_f1": 0.8857792307154975,
+   "balanced_acc": 0.8920362351991039,
+   "glioma_recall": 0.7449799196787149,
+   "tumor_sens": 0.9806451612903225,
+   "tumor_spec": 0.9728915662650602,
+   "screen_sens_05": 0.9822580645161291,
+   "screen_spec_05": 0.9728915662650602,
+   "tumor_auc": 0.9944131364166342
+  }
+ },
+ "seed1": {
+  "what": "Тот же рецепт, повтор обучения (seed 1)",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 1,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.9257432850215715,
+  "best_epoch": 10,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.888676844783715,
+   "macro_f1": 0.8943766641716894,
+   "balanced_acc": 0.9013505978149876,
+   "glioma_recall": 0.7811244979919679,
+   "tumor_sens": 0.9806451612903225,
+   "tumor_spec": 0.9819277108433735,
+   "screen_sens_05": 0.9822580645161291,
+   "screen_spec_05": 0.9728915662650602,
+   "tumor_auc": 0.9916172755538281
+  }
+ },
+ "seed2": {
+  "what": "Тот же рецепт, повтор обучения (seed 2)",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 2,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.9301946689634859,
+  "best_epoch": 14,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.8899491094147582,
+   "macro_f1": 0.8960682629367883,
+   "balanced_acc": 0.9026488334982407,
+   "glioma_recall": 0.7791164658634538,
+   "tumor_sens": 0.9806451612903225,
+   "tumor_spec": 0.9909638554216867,
+   "screen_sens_05": 0.9838709677419355,
+   "screen_spec_05": 0.9819277108433735,
+   "tumor_auc": 0.9944811504080839
+  }
+ },
+ "class_w": {
+  "what": "Веса классов в функции потерь (против путаницы глиома/менингиома)",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 42,
+  "epochs": 15,
+  "class_weights": true,
+  "params_M": 4.0,
+  "val_macro_f1": 0.9167634330024125,
+  "best_epoch": 8,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.8734096692111959,
+   "macro_f1": 0.8817718105749355,
+   "balanced_acc": 0.8879209955020677,
+   "glioma_recall": 0.7369477911646586,
+   "tumor_sens": 0.9814516129032258,
+   "tumor_spec": 0.9608433734939759,
+   "screen_sens_05": 0.9822580645161291,
+   "screen_spec_05": 0.9548192771084337,
+   "tumor_auc": 0.9937257092887679
+  }
+ },
+ "epochs30": {
+  "what": "Дольше обучение: 30 эпох вместо 15",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 42,
+  "epochs": 30,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.9338627920646556,
+  "best_epoch": 18,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.9083969465648855,
+   "macro_f1": 0.9123457587423516,
+   "balanced_acc": 0.916098987076864,
+   "glioma_recall": 0.8433734939759037,
+   "tumor_sens": 0.9838709677419355,
+   "tumor_spec": 0.9668674698795181,
+   "screen_sens_05": 0.9870967741935484,
+   "screen_spec_05": 0.9608433734939759,
+   "tumor_auc": 0.996293237465993
+  }
+ },
+ "no_aug": {
+  "what": "Без аугментаций (поворотов, отражений, яркости, шума)",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": false,
+  "size": 256,
+  "seed": 42,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.86352839155493,
+  "best_epoch": 15,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.8104325699745547,
+   "macro_f1": 0.8186167458932566,
+   "balanced_acc": 0.8281386942937681,
+   "glioma_recall": 0.6626506024096386,
+   "tumor_sens": 0.9620967741935483,
+   "tumor_spec": 0.9397590361445783,
+   "screen_sens_05": 0.9685483870967742,
+   "screen_spec_05": 0.8945783132530121,
+   "tumor_auc": 0.9829503497862417
+  }
+ },
+ "resnet50": {
+  "what": "Другая архитектура: ResNet-50 (в 6 раз больше параметров)",
+  "arch": "resnet50",
+  "pretrained": true,
+  "aug": true,
+  "size": 256,
+  "seed": 42,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 23.5,
+  "val_macro_f1": 0.9557764879637672,
+  "best_epoch": 13,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.9236641221374046,
+   "macro_f1": 0.9272047221837003,
+   "balanced_acc": 0.9303469494544225,
+   "glioma_recall": 0.8714859437751004,
+   "tumor_sens": 0.989516129032258,
+   "tumor_spec": 0.9849397590361446,
+   "screen_sens_05": 0.9903225806451613,
+   "screen_spec_05": 0.9849397590361446,
+   "tumor_auc": 0.997901282549553
+  }
+ },
+ "no_pretrain": {
+  "what": "Без предобучения на ImageNet (с нуля)",
+  "arch": "efficientnet_b0",
+  "pretrained": false,
+  "aug": true,
+  "size": 256,
+  "seed": 42,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.7104468872526188,
+  "best_epoch": 12,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.6908396946564885,
+   "macro_f1": 0.6978398250894835,
+   "balanced_acc": 0.7167252707678153,
+   "glioma_recall": 0.4939759036144578,
+   "tumor_sens": 0.9459677419354838,
+   "tumor_spec": 0.8704819277108434,
+   "screen_sens_05": 0.9637096774193549,
+   "screen_spec_05": 0.8554216867469879,
+   "tumor_auc": 0.9706143120870577
+  }
+ },
+ "size128": {
+  "what": "Меньшее разрешение входа: 128×128 вместо 256×256",
+  "arch": "efficientnet_b0",
+  "pretrained": true,
+  "aug": true,
+  "size": 128,
+  "seed": 42,
+  "epochs": 15,
+  "class_weights": false,
+  "params_M": 4.0,
+  "val_macro_f1": 0.8728618336030084,
+  "best_epoch": 10,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.8428753180661578,
+   "macro_f1": 0.8521945453896762,
+   "balanced_acc": 0.8569098191962414,
+   "glioma_recall": 0.7269076305220884,
+   "tumor_sens": 0.9725806451612903,
+   "tumor_spec": 0.9819277108433735,
+   "screen_sens_05": 0.9766129032258064,
+   "screen_spec_05": 0.9698795180722891,
+   "tumor_auc": 0.9946074621064903
+  }
+ },
+ "ens_seeds": {
+  "what": "Ансамбль: основная модель + 2 повтора (3 шт.: base, seed1, seed2)",
+  "members": [
+   "base",
+   "seed1",
+   "seed2"
+  ],
+  "val_macro_f1": 0.9358864936105711,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.9007633587786259,
+   "macro_f1": 0.9063856355203304,
+   "balanced_acc": 0.9123609470982526,
+   "glioma_recall": 0.7991967871485943,
+   "tumor_sens": 0.9838709677419355,
+   "tumor_spec": 0.9819277108433735,
+   "screen_sens_05": 0.9879032258064516,
+   "screen_spec_05": 0.9728915662650602,
+   "tumor_auc": 0.9946803342401865
+  }
+ },
+ "ens_all": {
+  "what": "Ансамбль всех сильных вариантов (6 шт.: base, seed1, seed2, class_w, epochs30, resnet50)",
+  "members": [
+   "base",
+   "seed1",
+   "seed2",
+   "class_w",
+   "epochs30",
+   "resnet50"
+  ],
+  "val_macro_f1": 0.9390326311370432,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.9128498727735369,
+   "macro_f1": 0.9174374862254285,
+   "balanced_acc": 0.921758434218972,
+   "glioma_recall": 0.8393574297188755,
+   "tumor_sens": 0.9862903225806452,
+   "tumor_spec": 0.9819277108433735,
+   "screen_sens_05": 0.9879032258064516,
+   "screen_spec_05": 0.9728915662650602,
+   "tumor_auc": 0.9963078118927321
+  }
+ },
+ "selected": {
+  "tag": "resnet50",
+  "rule": "максимальный macro-F1 на валидации",
+  "val_macro_f1": 0.9557764879637672,
+  "test": {
+   "n": 1572,
+   "accuracy": 0.9236641221374046,
+   "macro_f1": 0.9272047221837003,
+   "balanced_acc": 0.9303469494544225,
+   "glioma_recall": 0.8714859437751004,
+   "tumor_sens": 0.989516129032258,
+   "tumor_spec": 0.9849397590361446,
+   "screen_sens_05": 0.9903225806451613,
+   "screen_spec_05": 0.9849397590361446,
+   "tumor_auc": 0.997901282549553
+  },
+  "base_test": {
+   "n": 1572,
+   "accuracy": 0.8778625954198473,
+   "macro_f1": 0.8857792307154975,
+   "balanced_acc": 0.8920362351991039,
+   "glioma_recall": 0.7449799196787149,
+   "tumor_sens": 0.9806451612903225,
+   "tumor_spec": 0.9728915662650602,
+   "screen_sens_05": 0.9822580645161291,
+   "screen_spec_05": 0.9728915662650602,
+   "tumor_auc": 0.9944131364166342
+  }
+ },
+ "seg_base": {
+  "what": "Основная сегментация: Figshare + маски на снимках организаторов + пустые маски на здоровых",
+  "use_org": true,
+  "use_empty": true,
+  "seed": 42,
+  "epochs": 20,
+  "test": {
+   "dice_figshare_new_patients": 0.7899739812261583,
+   "dice_median": 0.8911042945620365,
+   "dice_by_class": {
+    "Глиома": 0.6973540925462772,
+    "Менингиома": 0.903442774529001,
+    "Гипофиз": 0.8361003388490851
+   },
+   "healthy_false_contour_area05": 0.0,
+   "healthy_false_contour_demo": 0.0030120481927710845,
+   "dice_org_images": 0.8188033026733734
+  }
+ },
+ "seg_no_org": {
+  "what": "Без перенесённых масок на снимках организаторов (только Figshare + здоровые)",
+  "use_org": false,
+  "use_empty": true,
+  "seed": 42,
+  "epochs": 20,
+  "n_train": 3280,
+  "val_dice": 0.808365837082614,
+  "test": {
+   "dice_figshare_new_patients": 0.7843104438547075,
+   "dice_median": 0.8816705336638103,
+   "dice_by_class": {
+    "Глиома": 0.67885956237314,
+    "Менингиома": 0.9075835376488858,
+    "Гипофиз": 0.841565760609293
+   },
+   "healthy_false_contour_area05": 0.009036144578313253,
+   "healthy_false_contour_demo": 0.009036144578313253,
+   "dice_org_images": 0.7812287014673386
+  }
+ },
+ "seg_no_empty": {
+  "what": "Без здоровых снимков с пустой маской (не учим «не рисовать»)",
+  "use_org": true,
+  "use_empty": false,
+  "seed": 42,
+  "epochs": 20,
+  "n_train": 5961,
+  "val_dice": 0.8359661906120021,
+  "test": {
+   "dice_figshare_new_patients": 0.8149680746047747,
+   "dice_median": 0.8872858431357722,
+   "dice_by_class": {
+    "Глиома": 0.7411519483830576,
+    "Менингиома": 0.9112638464385987,
+    "Гипофиз": 0.8470321634519123
+   },
+   "healthy_false_contour_area05": 0.47289156626506024,
+   "healthy_false_contour_demo": 0.6234939759036144,
+   "dice_org_images": 0.8350778944848612
+  }
+ },
+ "seed_summary": {
+  "accuracy": {
+   "mean": 0.8854961832061069,
+   "std": 0.006641416354268776,
+   "n": 3
+  },
+  "macro_f1": {
+   "mean": 0.8920747192746584,
+   "std": 0.005517269138298002,
+   "n": 3
+  },
+  "tumor_sens": {
+   "mean": 0.9806451612903225,
+   "std": 0.0,
+   "n": 3
+  },
+  "tumor_spec": {
+   "mean": 0.9819277108433734,
+   "std": 0.009036144578313254,
+   "n": 3
+  },
+  "glioma_recall": {
+   "mean": 0.7684069611780456,
+   "std": 0.020313240837340717,
+   "n": 3
+  }
+ }
+}
