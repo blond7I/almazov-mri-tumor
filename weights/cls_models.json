@@ -1,0 +1,19 @@
+{
+ "selected": "resnet50",
+ "models": [
+  {
+   "tag": "resnet50",
+   "arch": "resnet50",
+   "size": 256,
+   "parts": [
+    "cls_resnet50.pt.part0",
+    "cls_resnet50.pt.part1",
+    "cls_resnet50.pt.part2",
+    "cls_resnet50.pt.part3",
+    "cls_resnet50.pt.part4"
+   ],
+   "sha256": "a02dcf917a08d43c53051b4478cd59fa7b496aebf87ddbf2956ad9b0d50b1f5d"
+  }
+ ],
+ "screen_thr": 0.5
+}
