@@ -110,6 +110,38 @@ def build_ui(M, examples=()):
         log(st, 'зона сделана находкой', zone=zid)
         return refresh(st, layers, f'Зона ?{zid} добавлена как находка. Нажмите «Пересчитать заключение».')
 
+    def editor_value(st, layers):
+        return dict(background=render(st, layers), layers=[], composite=None)
+
+    def on_brush(ed, st, layers):
+        if not st or ed is None:
+            return (st, None, gr.update(), gr.update(), '', gr.update()) if not st else (*refresh(st, layers), gr.update())
+        import cv2
+        lay = None
+        if ed.get('layers'):
+            lay = np.asarray(ed['layers'][0])
+        elif ed.get('composite') is not None and ed.get('background') is not None:
+            diff = np.abs(np.asarray(ed['composite'])[..., :3].astype(int) - np.asarray(ed['background'])[..., :3].astype(int)).sum(2) > 30
+            lay = np.concatenate([np.asarray(ed['composite'])[..., :3], (diff * 255).astype(np.uint8)[..., None]], 2)
+        if lay is None or lay.shape[-1] < 4 or not (lay[..., 3] > 0).any():
+            return (*refresh(st, layers, 'Кисть: изменений нет.'), gr.update())
+        a = lay[..., 3] > 0
+        r, g_, b = [lay[..., i].astype(int) for i in range(3)]
+        add = a & (r > b + 40)
+        rem = a & (b > r + 40)
+        to256 = lambda m: cv2.resize(m.astype(np.uint8), (256, 256), interpolation=cv2.INTER_AREA) > 0
+        m = st['mask'].astype(bool)
+        m = (m | to256(add)) & ~to256(rem)
+        k, lab, stt, _ = cv2.connectedComponentsWithStats(m.astype(np.uint8))
+        for c in range(1, k):
+            if stt[c, cv2.CC_STAT_AREA] < 10:
+                m[lab == c] = False
+        st['mask'] = m.astype(np.uint8)
+        st['findings'] = pipeline.recompute(st['res'], st['mask'], edited_ids=[0])
+        log(st, 'правка кистью', added_px256=int(to256(add).sum()), removed_px256=int(to256(rem).sum()))
+        out = refresh(st, layers, 'Контур исправлен кистью. Нажмите «Пересчитать заключение».')
+        return (*out, editor_value(st, layers))
+
     def on_layers(layers, st):
         return render(st, layers) if st else None
 
@@ -159,6 +191,12 @@ def build_ui(M, examples=()):
                 with gr.Row():
                     zsel = gr.Dropdown([], label='Зона дополнительного просмотра')
                     bpro = gr.Button('Сделать находкой')
+                with gr.Accordion('Правка контура кистью: красная — добавить, синяя — убрать', open=False):
+                    ed = gr.ImageEditor(type='numpy', canvas_size=(768, 768), fixed_canvas=True, sources=[], layers=False,
+                                        transforms=[], height=520, label='Рисуйте поверх снимка',
+                                        brush=gr.Brush(colors=['#ff2020', '#2060ff'], default_color='#ff2020', default_size=10,
+                                                       color_mode='fixed'))
+                    bbr = gr.Button('Применить правку кистью')
                 stat = gr.Markdown()
             with gr.Column(scale=5):
                 probs = gr.Label(num_top_classes=4, label='Результат ИИ (справочно)')
@@ -171,10 +209,15 @@ def build_ui(M, examples=()):
                 fout = gr.File(label='Архив заключения')
         if examples:
             gr.Examples(list(examples), inputs=img, label='Примеры (тестовая часть, модель их не видела)')
-        btn.click(on_analyze, [img, seq, plane, study, layers], [st, out, probs, text, fsel, zsel, thr, stat, warn])
-        thr.release(on_thr, [thr, st, layers], [st, out, fsel, zsel, stat])
-        bdel.click(on_delete, [fsel, st, layers], [st, out, fsel, zsel, stat])
-        bpro.click(on_promote, [zsel, st, layers], [st, out, fsel, zsel, stat])
+        btn.click(on_analyze, [img, seq, plane, study, layers], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
+            lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
+        bbr.click(on_brush, [ed, st, layers], [st, out, fsel, zsel, stat, ed])
+        thr.release(on_thr, [thr, st, layers], [st, out, fsel, zsel, stat]).then(
+            lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
+        bdel.click(on_delete, [fsel, st, layers], [st, out, fsel, zsel, stat]).then(
+            lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
+        bpro.click(on_promote, [zsel, st, layers], [st, out, fsel, zsel, stat]).then(
+            lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
         layers.change(on_layers, [layers, st], out)
         brb.click(on_rebuild, [st, seq, plane, study], [text, warn])
         bch.click(on_check, [text, st], warn)
