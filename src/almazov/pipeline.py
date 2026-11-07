@@ -183,8 +183,8 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     p_tumor = 1 - float(P[NO_TUMOR])
     per_model = maps.mean(1)                          # (m, H, W): карта каждой модели (среднее по отражениям)
     pm = per_model.mean(0)
-    pmax = maps.reshape(-1, *pm.shape).max(0)        # максимум по моделям и отражениям
-    pstd = maps.reshape(-1, *pm.shape).std(0)
+    pmax = per_model.max(0)                           # максимум по моделям (как в оценке по протоколу)
+    pstd = per_model.std(0)
     mask = clean_mask(pm, C['contour_thr'], C['min_area'])
     outer = clean_mask(pm, C['band_lo'], C['min_area'])
     inner = (pm >= C['band_hi']).astype(np.uint8)
