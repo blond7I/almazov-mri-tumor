@@ -62,6 +62,7 @@ def bundle(path, res, final_text, final_mask, overlay_rgb, log, meta, findings, 
     journal = dict(
         saved_at=now.isoformat(timespec='seconds'), seconds_spent=round((now - started_at).total_seconds()),
         model_version=res.get('model_version'), meta=meta,
+        mode='обвести с нуля (без ИИ)' if meta.get('blind') else 'с подсказками ИИ',
         ai_result=to_json(res), final_findings=findings, final_text=final_text,
         doctor_edits=log, text_warnings_at_save=warnings,
         contour_agreement_dice_ai_vs_final=round(dice, 4),

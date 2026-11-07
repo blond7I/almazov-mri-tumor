@@ -57,12 +57,19 @@ def build_ui(M, examples=()):
             s += '\n\n⚠️ ' + ' · '.join(fl)
         return s + (f'\n\n{note}' if note else '')
 
-    def on_analyze(img, seq, plane, study, layers):
+    def on_analyze(img, seq, plane, study, layers, blind=False):
         if img is None:
             raise gr.Error('Загрузите срез МРТ (JPG/PNG).')
         res = pipeline.analyze(M, img, source_name='загруженный снимок')
         st = dict(res=res, mask=res['arrays']['mask'].copy(), findings=copy.deepcopy(res['findings']),
-                  zones=copy.deepcopy(res['review_zones']), log=[], started=_dt.datetime.now(), edited=False)
+                  zones=copy.deepcopy(res['review_zones']), log=[], started=_dt.datetime.now(), edited=False, blind=bool(blind))
+        if blind:   # проверка врачом: «обвести с нуля» без подсказок ИИ (для сравнения времени)
+            st['mask'] = np.zeros_like(st['mask']); st['findings'] = []; st['zones'] = []
+            st['res'] = dict(res, arrays=dict(res['arrays'], band=np.zeros_like(res['arrays']['band'])))
+            st['log'].append(dict(t=0, action='режим без подсказок ИИ'))
+            fc, zc = choices(st)
+            return (st, render(st, []), {}, '', fc, zc, gr.update(), '**Режим «обвести с нуля»**: подсказки ИИ скрыты. '
+                    'Обведите опухоль кистью (красная), затем «Сохранить».', '')
         txt = report.build(res, st['findings'], st['zones'], meta_of(seq, plane, study, None))['text']
         fc, zc = choices(st)
         return (st, render(st, layers), {c: res['probs'][c] for c in CLASSES}, txt, fc, zc,
@@ -164,7 +171,7 @@ def build_ui(M, examples=()):
         log(st, 'сохранено', warnings=len(w))
         d = tempfile.mkdtemp()
         p = os.path.join(d, f'zaklyuchenie_{_dt.datetime.now():%Y%m%d_%H%M%S}.zip')
-        export.bundle(p, st['res'], text, st['mask'], render(st, layers), st['log'], meta_of(seq, plane, study, None),
+        export.bundle(p, st['res'], text, st['mask'], render(st, layers), st['log'], dict(meta_of(seq, plane, study, None), blind=st.get('blind', False)),
                       st['findings'], w, st['started'])
         note = ('⚠️ Сохранено с предупреждениями:\n' + '\n'.join('— ' + x for x in w)) if w else '✅ Сохранено.'
         return p, note
@@ -181,7 +188,9 @@ def build_ui(M, examples=()):
                     seq = gr.Dropdown(SEQ, value=SEQ[0], label='Режим МРТ')
                     plane = gr.Dropdown(PLANE, value=PLANE[0], label='Плоскость')
                     study = gr.Textbox(label='Код исследования (обезличенный)', max_lines=1)
-                btn = gr.Button('Анализ', variant='primary')
+                with gr.Row():
+                    btn = gr.Button('Анализ', variant='primary', scale=3)
+                    blind = gr.Checkbox(label='Обвести с нуля (без ИИ)', value=False, scale=2)
                 out = gr.Image(label='Результат', height=520, interactive=False)
                 layers = gr.CheckboxGroup(LAYERS, value=LAYERS, label='Слои')
                 thr = gr.Slider(0.2, 0.8, value=0.5, step=0.05, label='Порог контура (ниже — шире контур)')
@@ -209,7 +218,7 @@ def build_ui(M, examples=()):
                 fout = gr.File(label='Архив заключения')
         if examples:
             gr.Examples(list(examples), inputs=img, label='Примеры (тестовая часть, модель их не видела)')
-        btn.click(on_analyze, [img, seq, plane, study, layers], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
+        btn.click(on_analyze, [img, seq, plane, study, layers, blind], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
             lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
         bbr.click(on_brush, [ed, st, layers], [st, out, fsel, zsel, stat, ed])
         thr.release(on_thr, [thr, st, layers], [st, out, fsel, zsel, stat]).then(
