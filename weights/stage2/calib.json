@@ -1,0 +1,17 @@
+{
+ "temperature": 0.75,
+ "screen_thr": 0.5,
+ "contour_thr": 0.5,
+ "min_area": 30,
+ "band_lo": 0.2,
+ "band_hi": 0.89,
+ "review_max": 0.3,
+ "review_mean": 0.5,
+ "review_min_area": 30,
+ "low_conf": 0.6,
+ "band_family": "max",
+ "band_r": 2,
+ "conformal_qhat": 0.18188142776489258,
+ "defer_conf_thr": 0.8931745886802673,
+ "fitted_on": "валидация (Figshare 38 пациентов для границы; 1419 снимков для температуры и конформных множеств)"
+}
