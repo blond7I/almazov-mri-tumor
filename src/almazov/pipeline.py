@@ -197,9 +197,23 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     pmax = per_model.max(0)                           # максимум по моделям (как в оценке по протоколу)
     pstd = per_model.std(0)
     mask = clean_mask(pm, C['contour_thr'], C['min_area'])
-    outer = clean_mask(pm, C['band_lo'], C['min_area'])
-    inner = (pm >= C['band_hi']).astype(np.uint8)
-    band = ((outer | mask) & (1 - inner)).astype(np.uint8)
+    if C.get('band_family'):          # полоса v2: база семейства + кольцо радиуса r (r подобран conformal risk control на валидации)
+        fam, r = C['band_family'], int(C.get('band_r', 0))
+        base = mask.copy()
+        if fam == 'prob':
+            base |= clean_mask(pm, 0.2)
+        elif fam == 'max':
+            base |= clean_mask(per_model.max(0), 0.3)
+        if mask.any():
+            d = cv2.distanceTransform((1 - base).astype(np.uint8), cv2.DIST_L2, 5)
+            outer = (d <= r).astype(np.uint8)
+        else:
+            outer = np.zeros_like(mask)
+        band = (outer & (1 - mask)).astype(np.uint8)
+    else:
+        outer = clean_mask(pm, C['band_lo'], C['min_area'])
+        inner = (pm >= C['band_hi']).astype(np.uint8)
+        band = ((outer | mask) & (1 - inner)).astype(np.uint8)
     review = ((pmax >= C['review_max']) & (pm < C['review_mean'])).astype(np.uint8)
     review &= (1 - cv2.dilate(mask, np.ones((5, 5), np.uint8)))
     review = clean_mask(review.astype(np.float32), 0.5, C['review_min_area'])

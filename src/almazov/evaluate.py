@@ -184,6 +184,79 @@ def review_zones_eval(pm, pmax, gt, is_normal, C):
                 false_zones_per_normal=float(np.mean(false_on_normal)) if false_on_normal else None)
 
 
+# ------------------------------------------------------------------ 3.1 полоса v2: семейства «база + кольцо радиуса r», CRC по r
+FAMILIES = {
+    'ring': 'контур + кольцо',
+    'prob': 'контур ∪ (среднее карт ≥ 0.2) + кольцо',
+    'max': 'контур ∪ (максимум карт ≥ 0.3) + кольцо',
+}
+R_GRID = np.arange(0, 41)
+
+
+def band_base(pm, pmax, fam, C=None):
+    c = clean_mask(pm, (C or {}).get('contour_thr', 0.5), (C or {}).get('min_area', 30))
+    if fam == 'ring':
+        b = c
+    elif fam == 'prob':
+        b = c | clean_mask(pm, 0.2)
+    else:
+        b = c | clean_mask(pmax, 0.3)
+    return c, b.astype(np.uint8)
+
+
+def family_stats(pm, pmax, gt, pids, fam):
+    """Для каждого среза с построенным контуром: доля опухоли дальше r от базы (по пациентам) и площадь полосы при каждом r."""
+    miss = {}; tot = {}; area = []
+    for p, mx, g, pid in zip(pm, pmax, gt, pids):
+        c, b = band_base(p, mx, fam)
+        if c.sum() == 0:                 # гарантия — для срезов, где система нарисовала контур (условие зависит только от входа)
+            continue
+        d = cv2.distanceTransform((1 - b).astype(np.uint8), cv2.DIST_L2, 5)
+        if g.any():
+            dg = d[g]
+            miss.setdefault(pid, np.zeros(len(R_GRID)))
+            miss[pid] += np.array([(dg > r).sum() for r in R_GRID])
+            tot[pid] = tot.get(pid, 0) + int(g.sum())
+        outside_c = (c == 0)
+        area.append(np.array([((d <= r) & outside_c).sum() for r in R_GRID]))
+    keys = sorted(tot)
+    risk = np.stack([miss[k] / tot[k] for k in keys]) if keys else np.zeros((0, len(R_GRID)))
+    return risk, np.stack(area) if area else np.zeros((0, len(R_GRID))), keys
+
+
+def crc_r(risk, alpha=ALPHA):
+    n = len(risk)
+    bound = n / (n + 1) * risk.mean(0) + 1 / (n + 1)
+    ok = np.where(bound <= alpha)[0]
+    return (int(R_GRID[ok[0]]) if len(ok) else None), bound
+
+
+def band_v2(pm_v, mx_v, gv, pv, pm_t, mx_t, gt, pt):
+    """Выбор семейства и радиуса только на валидации; тест — один раз для выбранного (и для справки — для остальных)."""
+    out = dict(alpha=ALPHA, families=FAMILIES, note='условная гарантия: срезы, где система построила контур')
+    best = None
+    for fam in FAMILIES:
+        rv, av, kv = family_stats(pm_v, mx_v, gv, pv, fam)
+        r, bound = crc_r(rv)
+        entry = dict(val_patients=len(kv), r=r, val_bound_at_r=float(bound[r]) if r is not None else None,
+                     val_mean_band_area_px=float(av[:, r].mean()) if r is not None else None)
+        out[fam] = entry
+        if r is not None and (best is None or entry['val_mean_band_area_px'] < out[best]['val_mean_band_area_px']):
+            best = fam
+    out['selected_on_val'] = best
+    for fam in FAMILIES:
+        r = out[fam]['r']
+        if r is None:
+            continue
+        rt, at, kt = family_stats(pm_t, mx_t, gt, pt, fam)
+        out[fam]['test'] = dict(patients=len(kt), mean_risk=float(rt[:, r].mean()),
+                                risk_ci=boot(lambda ii: rt[ii, r].mean(), np.arange(len(rt))),
+                                share_patients_risk_gt_alpha=float((rt[:, r] > ALPHA).mean()),
+                                mean_band_area_px=float(at[:, r].mean()),
+                                risk_without_band=float(rt[:, 0].mean()) if fam == 'ring' else None)
+    return out
+
+
 # ------------------------------------------------------------------ главный расчёт
 def run(res_dir, out_dir, calib_out=None):
     from .pipeline import DEFAULT_CALIB
@@ -208,6 +281,13 @@ def run(res_dir, out_dir, calib_out=None):
                     test_share_patients_risk_gt_alpha=float((r_t > ALPHA).mean()),
                     risk_at_contour_05=float(patient_risk(pm_t, gt, ptid, 0.5)[0].mean()))
     R['band_vs_ring'] = band_vs_ring(pm_t, gt, C['band_lo'])
+    R['crc_v2'] = band_v2(pm_v, mx_v, gv, pv, pm_t, mx_t, gt, ptid)
+    sel = R['crc_v2']['selected_on_val']
+    if sel:
+        C['band_family'], C['band_r'] = sel, R['crc_v2'][sel]['r']
+    # срезы с опухолью, где контура нет вовсе: их ловит не полоса, а правило «классификатор видит опухоль — смотрите весь срез»
+    no_c = np.array([clean_mask(p).sum() == 0 for p in pm_t]) & gt.reshape(len(gt), -1).any(1)
+    R['complete_miss_figshare_test'] = dict(share_tumor_slices=float(no_c.sum() / max(gt.reshape(len(gt), -1).any(1).sum(), 1)), n=int(no_c.sum()))
 
     # до/после: Dice по пациентам
     def dice_of(p):
@@ -253,6 +333,13 @@ def run(res_dir, out_dir, calib_out=None):
     R['seg_failure_detection'] = dict(n=int(len(idx)), failures=int(fail.sum()),
                                       auroc={k: auroc(v, fail) for k, v in scores.items()},
                                       auroc_ci={k: boot(lambda ii, v=v: auroc(v[ii], fail[ii]), grp_o[idx], n=300) for k, v in scores.items()})
+
+    # полные промахи контура на снимках организаторов с маской: сколько из них поймал классификатор (правило «смотрите весь срез»)
+    P_ens1 = ens_prob([Cl[k]['lte'] for k in clss], 1.0)
+    empty = co.reshape(len(co), -1).sum(1) == 0
+    flagged = (1 - P_ens1[idx, NO_TUMOR]) >= C['screen_thr']
+    R['complete_miss_org_test'] = dict(n_with_mask=int(len(idx)), no_contour=int(empty.sum()),
+                                       no_contour_flagged_by_classifier=float(flagged[empty].mean()) if empty.any() else None)
 
     # ---------- классификатор: калибровка, отказ, конформные множества
     Lv = [Cl[k]['lva'] for k in clss]
@@ -300,6 +387,24 @@ def run(res_dir, out_dir, calib_out=None):
                               share_singletons=float((sets.sum(1) == 1).mean()),
                               coverage_halves=dict(min=float(np.min(halves)), max=float(np.max(halves)), std=float(np.std(halves))))
     C['conformal_qhat'] = q
+    # APS (адаптивные множества): без пустых множеств; та же калибровка на валидации
+    def aps_scores(P, y):
+        o = np.argsort(-P, 1); cs = np.cumsum(np.take_along_axis(P, o, 1), 1)
+        rank = np.argmax(o == y[:, None], 1)
+        return cs[np.arange(len(y)), rank]
+    sa = aps_scores(Pv, yv)
+    qa = float(np.quantile(sa, min(1.0, np.ceil((n + 1) * (1 - ALPHA)) / n), method='higher'))
+    o = np.argsort(-PT, 1); cs = np.cumsum(np.take_along_axis(PT, o, 1), 1)
+    k_ = (cs < qa).sum(1) + 1
+    sets_a = np.zeros_like(PT, bool)
+    for i in range(len(PT)):
+        sets_a[i, o[i, :k_[i]]] = True
+    cov_a = sets_a[np.arange(len(yo)), yo]
+    R['conformal_aps'] = dict(alpha=ALPHA, qhat=qa, coverage=float(cov_a.mean()), avg_set_size=float(sets_a.sum(1).mean()),
+                              coverage_by_class={CLASSES[k]: float(cov_a[yo == k].mean()) for k in range(4)},
+                              share_singletons=float((sets_a.sum(1) == 1).mean()))
+    defer_thr = float(np.quantile(conf, .15))
+    C['defer_conf_thr'] = defer_thr
 
     # ---------- дополнительный тест: «новые» снимки полного архива
     if ex is not None:
@@ -311,6 +416,10 @@ def run(res_dir, out_dir, calib_out=None):
             Lx = [Z['logits_' + k] for k in clss if 'logits_' + k in Z]
             Px1 = ens_prob([Z['logits_cls_stage1']], 1.0)[nw]
             PxE = ens_prob(Lx, T)[nw]
+            errE = PxE.argmax(1) != y
+            R['extra_new_deferral'] = dict(errors=int(errE.sum()),
+                                           errors_flagged_low_conf=float((PxE.max(1)[errE] < defer_thr).mean()) if errE.any() else None,
+                                           share_flagged=float((PxE.max(1) < defer_thr).mean()), threshold_from='15% наименее уверенных на тесте')
             R['extra_new'] = dict(n=int(nw.sum()), groups=int(len(np.unique(g))), by_class=np.bincount(y, minlength=4).tolist(),
                                   status_counts=meta.status.value_counts().to_dict(),
                                   stage1=cls_metrics(Px1, y), ensemble=cls_metrics(PxE, y),

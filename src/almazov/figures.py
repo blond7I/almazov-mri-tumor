@@ -25,11 +25,25 @@ def _img(z, group, idx):
         return None
 
 
-def overlay(x, pm, lo, gt=None, thr=0.5):
+def band_of(pm, pmax, R):
+    """Полоса так же, как в системе: v2 (семейство + кольцо r), если выбрана на валидации, иначе порог v1."""
+    v2 = R.get('crc_v2') or {}
+    fam = v2.get('selected_on_val')
+    c = clean_mask(pm, 0.5)
+    if fam:
+        from .evaluate import band_base
+        _, b = band_base(pm, pmax, fam)
+        if not c.any():
+            return c, np.zeros_like(c)
+        d = cv2.distanceTransform((1 - b).astype(np.uint8), cv2.DIST_L2, 5)
+        return c, ((d <= v2[fam]['r']) & (c == 0)).astype(np.uint8)
+    o = clean_mask(pm, R['crc']['band_lo']) | c
+    return c, (o & (1 - c)).astype(np.uint8)
+
+
+def overlay(x, pm, pmax, R, gt=None):
     rgb = cv2.cvtColor(x, cv2.COLOR_GRAY2RGB)
-    c = clean_mask(pm, thr)
-    o = clean_mask(pm, lo) | c
-    band = (o & (1 - c)).astype(np.uint8)
+    c, band = band_of(pm, pmax, R)
     ov = rgb.copy(); ov[band > 0] = (255, 205, 0); rgb = cv2.addWeighted(rgb, .65, ov, .35, 0)
     ov = rgb.copy(); ov[c > 0] = (230, 40, 40); rgb = cv2.addWeighted(rgb, .7, ov, .3, 0)
     cs, _ = cv2.findContours(c, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -67,17 +81,15 @@ def risk_coverage(R, out):
 def band_examples(res_dir, R, out, n=3):
     E, S, Cl, segs, clss, ex = load(res_dir)
     z = zipfile.ZipFile(Path(res_dir) / 'images_jpg.zip')
-    pm, _, _ = stack_maps(S, segs, 'fte')
+    pm, mx, _ = stack_maps(S, segs, 'fte')
     gt = E['m_fte'] > 0
-    lo = R['crc']['band_lo']
     gain = []
     for i, (p, g) in enumerate(zip(pm, gt)):
-        c = clean_mask(p)
+        c, band = band_of(p, mx[i], R)
         miss = g & (c == 0)
         if c.sum() == 0 or miss.sum() < 40:
             continue
-        o = clean_mask(p, lo) | c
-        gain.append((float((miss & (o & (1 - c)).astype(bool)).sum() / miss.sum()), i))
+        gain.append((float((miss & band.astype(bool)).sum() / miss.sum()), i))
     pick = [i for _, i in sorted(gain, reverse=True)[:n]]
     if not pick:
         return
@@ -85,7 +97,7 @@ def band_examples(res_dir, R, out, n=3):
     axs = np.atleast_1d(axs)
     for ax, i in zip(axs, pick):
         x = _img(z, 'fte', E['idx_fte'][i])
-        ax.imshow(overlay(x, pm[i], lo, gt[i])); ax.axis('off')
+        ax.imshow(overlay(x, pm[i], mx[i], R, gt[i])); ax.axis('off')
         d = dice((clean_mask(pm[i]) > 0)[None], gt[i][None])[0]
         ax.set_title(f'{CLASSES[int(E["y_fte"][i])]}, Dice {d:.2f}', fontsize=10)
     fig.suptitle('красное — контур, жёлтое — неуверенная граница, зелёное — контур врача', fontsize=10, color=MUTED)
@@ -96,7 +108,7 @@ def gallery(res_dir, R, out):
     """4 верных и 4 ошибочных случая теста: что сказала система."""
     E, S, Cl, segs, clss, ex = load(res_dir)
     z = zipfile.ZipFile(Path(res_dir) / 'images_jpg.zip')
-    pm, _, _ = stack_maps(S, segs, 'ote')
+    pm, mx, _ = stack_maps(S, segs, 'ote')
     T = R['classifier']['temperature']
     P = ens_prob([Cl[k]['lte'] for k in clss], T)
     y = E['y_ote']; pred = P.argmax(1); conf = P.max(1)
@@ -108,7 +120,7 @@ def gallery(res_dir, R, out):
     for ax, i in zip(axs.ravel(), pick):
         x = _img(z, 'ote', E['idx_ote'][i])
         g = (E['m_ote'][i] > 0) if E['has_ote'][i] else None
-        ax.imshow(overlay(x, pm[i], R['crc']['band_lo'], g)); ax.axis('off')
+        ax.imshow(overlay(x, pm[i], mx[i], R, g)); ax.axis('off')
         ok = pred[i] == y[i]
         flag = 'отложить врачу' if conf[i] < np.quantile(conf, .15) else ''
         ax.set_title(f'{"✓" if ok else "✗"} ИИ: {CLASSES[pred[i]]} {conf[i]:.0%}\nистина: {CLASSES[y[i]]}  {flag}', fontsize=9,
