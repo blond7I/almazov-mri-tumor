@@ -20,7 +20,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-URL = 'https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar'
+URL = 'https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar'   # адрес, который использует MONAI
+MIRROR = 'https://huggingface.co/datasets/Sp-data/MSD/resolve/main/Task01_BrainTumour.zip'
 MOD = dict(flair=0, t1=1, t1gd=2, t2=3)
 REGIONS = ['WT', 'TC', 'ET']
 
@@ -33,11 +34,25 @@ def download(dst_dir, log=print):
     if not root.exists():
         if not tar.exists():
             log('Скачиваю MSD Task01_BrainTumour (~7 ГБ)...')
-            urllib.request.urlretrieve(URL, tar)
+            try:
+                urllib.request.urlretrieve(URL, tar)
+            except Exception as e:      # запасное зеркало (тот же архив MSD в zip)
+                log(f'  основной адрес недоступен ({type(e).__name__}), пробую зеркало Hugging Face')
+                tar = d / 'Task01_BrainTumour.zip'
+                urllib.request.urlretrieve(MIRROR, tar)
         log('Распаковываю...')
-        with tarfile.open(tar) as t:
-            t.extractall(d)
+        if tar.suffix == '.zip':
+            import zipfile
+            with zipfile.ZipFile(tar) as z:
+                z.extractall(d)
+        else:
+            with tarfile.open(tar) as t:
+                t.extractall(d)
         tar.unlink()
+        if not root.exists():
+            hit = glob.glob(str(d / '**' / 'Task01_BrainTumour'), recursive=True)
+            if hit:
+                root = Path(hit[0])
     return root
 
 
