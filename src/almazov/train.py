@@ -246,18 +246,22 @@ def run_stage2(df, A, fX, fM, fy, fpid, S, out_dir, repo_dir, smoke=False, seg_s
         np.savez(out / 'index.npz', **{k: S[k] for k in ['TR', 'VA', 'TE', 'TEU', 's_tr', 's_va', 's_te', 'om_idx', 'fpart']})
         log('Сохранены данные для оценки:', ev.name, f'{ev.stat().st_size / 1e6:.0f} МБ')
 
-    # пул снимков для ручной разметки режима МРТ и плоскости: все здоровые теста + стратифицированная выборка
+    # пул снимков для ручной разметки режима МРТ и плоскости: по одному снимку на группу копий (без аугментаций, если можно):
+    # все уникальные здоровые снимки теста + 40/класс из валидации + 60/класс из обучения
     lp = out / 'label_pool.npz'
     if not lp.exists():
         rs = np.random.RandomState(0)
-        pool = list(S['TE'][LAB[S['TE']] == NO_TUMOR])
-        for part_idx, k in [(S['VA'], 40), (S['TR'], 60)]:
+        cand = df[~df.label_conflict].copy()
+        cand['aug'] = (cand.source == 'аугм. копии').values
+        cand = cand.sort_values('aug', kind='stable').drop_duplicates('imgcomp')
+        pool = list(cand[(cand.part == 'test') & (cand.label == NO_TUMOR)].index.values)
+        for p_, k in [('val', 40), ('train', 60)]:
             for c in range(4):
-                cand = part_idx[LAB[part_idx] == c]
-                pool += list(rs.choice(cand, min(k, len(cand)), replace=False))
+                cc = cand[(cand.part == p_) & (cand.label == c) & (~cand.aug)].index.values
+                pool += list(rs.choice(cc, min(k, len(cc)), replace=False))
         pool = np.array(lim(np.array(pool), 40))
         np.savez_compressed(lp, idx=pool, y=LAB[pool], part=df.part.values[pool], source=df.source.values[pool],
-                            h=df.h.values[pool], w=df.w.values[pool])
+                            imgcomp=df.imgcomp.values[pool], h=df.h.values[pool], w=df.w.values[pool], name=df.name.values[pool])
         log(f'Пул для разметки режима/плоскости: {len(pool)} снимков')
 
     # картинки 256x256 (JPEG, качество 95) — для галереи, разметки режима/плоскости и демо; оценка идёт по картам, не по ним
