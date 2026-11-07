@@ -50,6 +50,8 @@ def build_ui(M, examples=()):
     def status(st, note=''):
         r = st['res']
         fl = [FLAG_TEXT.get(x, x) for x in r['flags']]
+        if r.get('refused'):
+            return '🚫 **Анализ не выполнен.** ' + ' '.join(c['text'] for c in r['checks'] if c['level'] == 'refuse')
         s = f'**Модели:** {r["model_version"]}.  **Находок:** {len(st["findings"])}, зон просмотра: {len(st["zones"])}.'
         if fl:
             s += '\n\n⚠️ ' + ' · '.join(fl)

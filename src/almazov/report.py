@@ -66,6 +66,13 @@ def build(res, findings=None, zones=None, meta=None):
         src.insert(0, f'Исследование: {meta["study_id"]} (обезличено).')
     S['Исходные данные'] = '\n'.join(src)
 
+    if res.get('refused'):
+        S['Анализ не выполнен'] = '\n'.join(c['text'] for c in res['checks'] if c['level'] == 'refuse')
+        S['Подпись'] = ('Система поддержки принятия врачебных решений (исследовательский прототип, не медицинское изделие) '
+                        'отказалась анализировать изображение. Решение принимает врач.')
+        text = '\n\n'.join(f'{k.upper()}\n{v}' for k, v in S.items())
+        return dict(sections=S, text=text, facts=dict(tumor=None, type=None, n_findings=0, halves=[], refused=True))
+
     # 2. Описание
     d = []
     if F:
@@ -126,6 +133,9 @@ def build(res, findings=None, zones=None, meta=None):
     seq = (meta.get('sequence') or '').lower().replace(' ', '')
     if seq and not (re.search(r't1.*(c|контраст|\+|gd)', seq) and 'без' not in seq):
         lim.append(f'Режим «{meta.get("sequence")}» вне области применения: система проверена на T1 с контрастом.')
+    for c in res.get('checks', []):
+        if c['level'] == 'warn' and c['code'] not in ('low_resolution', 'color'):
+            lim.append(c['text'])
     for x in meta.get('extra_limits', []):
         lim.append(x)
     S['Ограничения'] = '\n'.join(x for x in lim if x)

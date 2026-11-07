@@ -90,6 +90,7 @@ class Models:
     seg: list = field(default_factory=list)
     calib: dict = field(default_factory=lambda: dict(DEFAULT_CALIB))
     version: str = ''
+    input_models: object = None
 
 
 def load_models(repo_dir, cache_dir=None, device='cpu', use_stage2=True):
@@ -115,6 +116,9 @@ def load_models(repo_dir, cache_dir=None, device='cpu', use_stage2=True):
             net = nets.make_cls('resnet50') if m['kind'] == 'cls' else nets.make_seg()
             net.load_state_dict(nets.load_state(f))
             (M.cls if m['kind'] == 'cls' else M.seg).append((m['tag'], net.to(dev).eval()))
+    if (S2 / 'input_models.npz').exists():
+        from .inputcheck import FeatureModels
+        M.input_models = FeatureModels(S2 / 'input_models.npz')
     for c in [S2 / 'calib.json', W / 'calib.json']:
         if c.exists():
             M.calib.update(json.load(open(c)))
@@ -159,8 +163,9 @@ def describe(mask, arrays, C, scale, head_px, pixel_spacing_mm=None):
 def _infer(M, x256, dev):
     xb = x256[None]
     L = np.stack([nets.cls_logits(net, xb, dev)[0] for _, net in M.cls])            # (m, 2, 4)
+    feat = nets.cls_features(M.cls[0][1], xb, dev)[0] if M.input_models is not None else None
     maps = np.stack([nets.seg_maps(net, xb, dev, flip='both')[0] for _, net in M.seg])  # (m, 2, H, W)
-    return L, maps
+    return L, maps, feat
 
 
 def _softmax(z):
@@ -176,7 +181,7 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     h, w = g.shape
     x256 = prep(g)
     scale, oy, ox = prep_geometry(h, w)
-    L, maps = _infer(M, x256, dev)
+    L, maps, feat = _infer(M, x256, dev)
     T = float(C.get('temperature', 1.0))
     P_models = _softmax(L / T).mean(1)               # по каждой модели: среднее по отражениям
     P = P_models.mean(0)                              # ансамбль
@@ -194,6 +199,13 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     review = clean_mask(review.astype(np.float32), 0.5, C['review_min_area'])
     hm = head_mask(x256)
     head_px = max(int(hm.sum()), 1)
+    from .inputcheck import basic_checks, feature_checks, REFUSE
+    checks = basic_checks(g, colorfulness, x256, hm)
+    input_info = {}
+    if M.input_models is not None and feat is not None:
+        fc, input_info = feature_checks(M.input_models, feat)
+        checks += fc
+    refused = any(c[0] == REFUSE for c in checks)
 
     findings = describe(mask, dict(prob=pm, band=band, per_model=per_model), C, scale, head_px, pixel_spacing_mm)
     zones = []
@@ -231,7 +243,8 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
         probs={CLASSES[i]: round(float(P[i]), 4) for i in range(4)},
         probs_by_model=[{CLASSES[i]: round(float(p[i]), 4) for i in range(4)} for p in P_models],
         p_tumor=round(p_tumor, 4), tumor=bool(tumor), top_type=CLASSES[top], top_type_p=round(top_p, 4),
-        findings=findings, review_zones=zones, flags=flags, head_px256=head_px,
+        findings=[] if refused else findings, review_zones=[] if refused else zones, flags=flags, head_px256=head_px,
+        refused=refused, checks=[dict(level=a, code=b, text=c) for a, b, c in checks], input_info=input_info,
         model_version=M.version, calib=dict(C),
         arrays=dict(x256=x256, prob=pm, prob_max=pmax, prob_std=pstd, mask=mask, band=band, review=review, head=hm,
                     per_model=per_model.astype(np.float32)),
