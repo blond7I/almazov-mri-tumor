@@ -188,7 +188,7 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     x256 = prep(g)
     scale, oy, ox = prep_geometry(h, w)
     L, maps, feat = _infer(M, x256, dev)
-    T = float(C.get('temperature', 1.0))
+    T = float(C.get('temperature', 1.0)) if len(M.cls) > 1 else 1.0   # температура подобрана для ансамбля; одна модель этапа 1 уже откалибрована (ECE 0.022)
     P_models = _softmax(L / T).mean(1)               # по каждой модели: среднее по отражениям
     P = P_models.mean(0)                              # ансамбль
     p_tumor = 1 - float(P[NO_TUMOR])
