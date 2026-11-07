@@ -57,10 +57,12 @@ def build_ui(M, examples=()):
             s += '\n\n⚠️ ' + ' · '.join(fl)
         return s + (f'\n\n{note}' if note else '')
 
-    def on_analyze(img, seq, plane, study, layers, blind=False):
+    def on_analyze(img, seq, plane, study, layers, blind=False, dcm=None):
+        if dcm is not None:
+            img = dcm if isinstance(dcm, str) else getattr(dcm, 'name', dcm)
         if img is None:
-            raise gr.Error('Загрузите срез МРТ (JPG/PNG).')
-        res = pipeline.analyze(M, img, source_name='загруженный снимок')
+            raise gr.Error('Загрузите срез МРТ (JPG/PNG) или файл DICOM.')
+        res = pipeline.analyze(M, img, source_name='DICOM' if dcm is not None else 'загруженный снимок')
         st = dict(res=res, mask=res['arrays']['mask'].copy(), findings=copy.deepcopy(res['findings']),
                   zones=copy.deepcopy(res['review_zones']), log=[], started=_dt.datetime.now(), edited=False, blind=bool(blind))
         if blind:   # проверка врачом: «обвести с нуля» без подсказок ИИ (для сравнения времени)
@@ -183,7 +185,9 @@ def build_ui(M, examples=()):
         st = gr.State(None)
         with gr.Row():
             with gr.Column(scale=5):
-                img = gr.Image(type='numpy', label='Срез МРТ (JPG/PNG)', height=260)
+                with gr.Row():
+                    img = gr.Image(type='numpy', label='Срез МРТ (JPG/PNG)', height=260, scale=3)
+                    dcm = gr.File(label='или DICOM (.dcm): мм и сторона пациента', file_types=['.dcm', '.dicom'], type='filepath', scale=2)
                 with gr.Row():
                     seq = gr.Dropdown(SEQ, value=SEQ[0], label='Режим МРТ')
                     plane = gr.Dropdown(PLANE, value=PLANE[0], label='Плоскость')
@@ -218,7 +222,7 @@ def build_ui(M, examples=()):
                 fout = gr.File(label='Архив заключения')
         if examples:
             gr.Examples(list(examples), inputs=img, label='Примеры (тестовая часть, модель их не видела)')
-        btn.click(on_analyze, [img, seq, plane, study, layers, blind], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
+        btn.click(on_analyze, [img, seq, plane, study, layers, blind, dcm], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
             lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
         bbr.click(on_brush, [ed, st, layers], [st, out, fsel, zsel, stat, ed])
         thr.release(on_thr, [thr, st, layers], [st, out, fsel, zsel, stat]).then(

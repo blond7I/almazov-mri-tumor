@@ -58,12 +58,17 @@ def build(res, findings=None, zones=None, meta=None):
     S = {}
 
     # 1. Исходные данные
-    src = [f'Изображение: {meta.get("file") or res.get("source") or "срез МРТ"}, {w}×{h} пикс.',
-           f'Размер пикселя: {_num(px_mm, 3) + " мм" if px_mm else "неизвестен (JPG/PNG) — размеры даны в пикселях"}.',
-           f'Режим МРТ: {meta.get("sequence") or "не указан"}; плоскость: {meta.get("plane") or "не указана"}.',
+    dc = res.get('dicom') or {}
+    seq_txt = meta.get('sequence') or (f'{dc["sequence_hint"]} (по описанию серии DICOM)' if dc.get('sequence_hint') else 'не указан')
+    plane_txt = meta.get('plane') or (f'{dc["plane"]} (по ориентации DICOM)' if dc.get('plane') else 'не указана')
+    src = [f'Изображение: {meta.get("file") or res.get("source") or "срез МРТ"}{" (DICOM)" if dc else ""}, {w}×{h} пикс.',
+           f'Размер пикселя: {_num(px_mm, 3) + " мм" if px_mm else ("неизвестен (JPG/PNG) — размеры даны в пикселях" if not dc else "в DICOM не указан или пиксели неквадратные — размеры в пикселях")}.',
+           f'Режим МРТ: {seq_txt}; плоскость: {plane_txt}.',
            'Объём анализа: один двумерный срез, не исследование целиком.']
     if meta.get('study_id'):
         src.insert(0, f'Исследование: {meta["study_id"]} (обезличено).')
+    if res.get('deidentified'):
+        src.append('Персональные данные пациента из DICOM в заключение и журнал не переносятся.')
     S['Исходные данные'] = '\n'.join(src)
 
     if res.get('refused'):
@@ -78,6 +83,8 @@ def build(res, findings=None, zones=None, meta=None):
     if F:
         for f in F:
             loc = f'{_where(f["half"])}, в {VERT_GEN.get(f.get("vert", ""), "средней")} трети по высоте'
+            if f.get('patient_side'):
+                loc += f' ({f["patient_side"]} у пациента — по ориентации DICOM)'
             line = f'Находка №{f["id"]}: {loc} выделена область повышенной вероятности опухоли; {_size(f, px_mm)}.'
             if f.get('band_ratio', 0) > 0.6:
                 line += ' Граница определяется неуверенно (жёлтая полоса на изображении).'
@@ -123,9 +130,10 @@ def build(res, findings=None, zones=None, meta=None):
     # 5. Ограничения (автотриггеры)
     lim = ['Система различает только глиому, менингиому и опухоль гипофиза; метастазы, лимфома, абсцесс и другие образования ею не распознаются.',
            'Контур соответствует видимой на постконтрастном T1 части образования; перифокальная зона (отёк) по T1 не оценивается — для неё нужен FLAIR/T2.',
-           'Сторона указана относительно изображения, а не пациента: по JPG/PNG ориентация неизвестна.' if not meta.get('orientation_known') else '']
+           'Сторона указана относительно изображения, а не пациента: по JPG/PNG ориентация неизвестна.' if not (dc.get('orientation') or meta.get('orientation_known')) else '']
     if not px_mm:
-        lim.append('Размеры в миллиметрах недоступны: в JPG/PNG нет размера пикселя (нужен DICOM).')
+        lim.append('Размеры в миллиметрах недоступны: в JPG/PNG нет размера пикселя (нужен DICOM).' if not dc else
+                   'Размеры в миллиметрах недоступны: в DICOM нет размера пикселя или пиксели неквадратные.')
     if 'low_resolution' in fl:
         lim.append('Низкое разрешение снимка (≤ 256 пикс.): точность системы ниже.')
     if 'color_image' in fl:
@@ -174,13 +182,20 @@ def check_text(text, res, findings=None):
         warn.append(f'В заключении: {", ".join(n.lower() for n in named)}; система считает наиболее вероятной: '
                     f'{res["top_type"].lower()} ({_pct(res["probs"][res["top_type"]])}). Это допустимо, если вы уверены.')
     halves = {f['half'] for f in F}
+    sides = {f.get('patient_side') for f in F if f.get('patient_side')}
+    if sides:   # DICOM: сравниваем с анатомической стороной пациента
+        for rx, side in [(r'(слева|лев(ой|ом|ая|ое)\s+(полушари|сторон|гемисфер|лобн|височн|теменн|затылочн))', 'слева'),
+                         (r'(справа|прав(ой|ом|ая|ое)\s+(полушари|сторон|гемисфер|лобн|височн|теменн|затылочн))', 'справа')]:
+            if re.search(rx, t) and side not in sides and 'по средней линии' not in sides:
+                warn.append(f'В тексте сторона «{side}», а по ориентации DICOM находки — {", ".join(sorted(sides))} у пациента.')
+        halves = {'центр'}   # сторону изображения больше не сверяем
     for word, half in [('правой', 'правая'), ('левой', 'левая'), ('справа', 'правая'), ('слева', 'левая')]:
         if 'центр' in halves:
             break
         if re.search(word, t) and F and half not in halves:
             warn.append(f'В тексте упомянута сторона «{word}», а находки — {", ".join(_where(x) for x in halves)}.')
             break
-    if re.search(r'полушари', t):
+    if re.search(r'полушари', t) and not (res.get('dicom') or {}).get('orientation'):
         warn.append('Упомянуто полушарие: по JPG/PNG ориентация неизвестна, сторона изображения может не совпадать с анатомической.')
     if re.search(r'\d+[.,]?\d*\s*(мм|см)\b', t) and not res.get('pixel_spacing_mm'):
         warn.append('В тексте есть размеры в мм/см, но размер пикселя неизвестен (JPG/PNG): проверьте источник размеров.')

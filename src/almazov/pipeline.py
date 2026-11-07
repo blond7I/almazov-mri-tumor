@@ -177,6 +177,12 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     """Срез МРТ (путь, numpy RGB/серый) -> словарь с вероятностями, картами, находками и флагами."""
     dev = torch.device(device) if device else next(M.cls[0][1].parameters()).device
     C = M.calib
+    dinfo = None
+    if isinstance(img, (str, Path)) and str(img).lower().endswith(('.dcm', '.dicom')):
+        from . import dicom as _dicom
+        img, dinfo = _dicom.read(img)
+        if pixel_spacing_mm is None:
+            pixel_spacing_mm = dinfo['pixel_spacing_mm']
     g, colorfulness = _gray(img)
     h, w = g.shape
     x256 = prep(g)
@@ -208,6 +214,11 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     refused = any(c[0] == REFUSE for c in checks)
 
     findings = describe(mask, dict(prob=pm, band=band, per_model=per_model), C, scale, head_px, pixel_spacing_mm)
+    if dinfo and dinfo.get('orientation'):
+        from .dicom import patient_side
+        for f in findings:
+            cx_orig = (f['centroid256'][0] + 0.5) * scale - 0.5 - ox
+            f['patient_side'] = patient_side(dinfo['orientation'], cx_orig / max(w, 1))
     zones = []
     k2, lab2, st2, cen2 = cv2.connectedComponentsWithStats(review)
     for n, c in enumerate(sorted(range(1, k2), key=lambda c: -st2[c, cv2.CC_STAT_AREA]), 1):
@@ -245,6 +256,8 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
         p_tumor=round(p_tumor, 4), tumor=bool(tumor), top_type=CLASSES[top], top_type_p=round(top_p, 4),
         findings=[] if refused else findings, review_zones=[] if refused else zones, flags=flags, head_px256=head_px,
         refused=refused, checks=[dict(level=a, code=b, text=c) for a, b, c in checks], input_info=input_info,
+        dicom={k: v for k, v in dinfo.items() if k != 'phi_present'} if dinfo else None,
+        deidentified=bool(dinfo and dinfo.get('phi_present')),
         model_version=M.version, calib=dict(C),
         arrays=dict(x256=x256, prob=pm, prob_max=pmax, prob_std=pstd, mask=mask, band=band, review=review, head=hm,
                     per_model=per_model.astype(np.float32)),
