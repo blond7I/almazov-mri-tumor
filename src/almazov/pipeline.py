@@ -123,6 +123,38 @@ def load_models(repo_dir, cache_dir=None, device='cpu', use_stage2=True):
     return M
 
 
+def describe(mask, arrays, C, scale, head_px, pixel_spacing_mm=None):
+    """Находки = связные области маски: площадь, размеры, положение на изображении, неуверенность границы."""
+    pm, band, per_model = arrays['prob'], arrays['band'], arrays['per_model']
+    mask = mask.astype(np.uint8)
+    findings = []
+    k, lab, st, cen = cv2.connectedComponentsWithStats(mask)
+    order = sorted(range(1, k), key=lambda c: -st[c, cv2.CC_STAT_AREA])
+    for n, c in enumerate(order, 1):
+        cm = (lab == c).astype(np.uint8)
+        a256 = int(st[c, cv2.CC_STAT_AREA])
+        dmax, dperp = feret(cm, scale)
+        cx, cy = cen[c]
+        ring = band & cv2.dilate(cm, np.ones((9, 9), np.uint8))
+        f = dict(id=n, kind='finding', area_px256=a256, area_px_orig=round(a256 * scale ** 2),
+                 area_pct_head=round(100 * a256 / head_px, 2),
+                 dmax_px=round(dmax, 1), dperp_px=round(dperp, 1),
+                 half='центр' if abs(cx - 128) < 15 else ('левая' if cx < 128 else 'правая'),
+                 vert='верхняя' if cy < 256 / 3 else ('нижняя' if cy > 2 * 256 / 3 else 'средняя'),
+                 centroid256=[round(float(cx), 1), round(float(cy), 1)],
+                 bbox256=[int(st[c, 0]), int(st[c, 1]), int(st[c, 2]), int(st[c, 3])],
+                 mean_prob=round(float(pm[cm > 0].mean()), 3),
+                 band_ratio=round(float(ring.sum()) / max(a256, 1), 2),
+                 models_agree=int(sum(((m_ >= C['contour_thr']) & (cm > 0)).sum() > 0.3 * a256 for m_ in per_model)),
+                 n_models=len(per_model))
+        if pixel_spacing_mm:
+            f['dmax_mm'] = round(dmax * pixel_spacing_mm, 1)
+            f['dperp_mm'] = round(dperp * pixel_spacing_mm, 1)
+            f['area_mm2'] = round(a256 * scale ** 2 * pixel_spacing_mm ** 2, 1)
+        findings.append(f)
+    return findings
+
+
 @torch.no_grad()
 def _infer(M, x256, dev):
     xb = x256[None]
@@ -163,36 +195,12 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     hm = head_mask(x256)
     head_px = max(int(hm.sum()), 1)
 
-    findings = []
-    k, lab, st, cen = cv2.connectedComponentsWithStats(mask)
-    order = sorted(range(1, k), key=lambda c: -st[c, cv2.CC_STAT_AREA])
-    for n, c in enumerate(order, 1):
-        cm = (lab == c).astype(np.uint8)
-        a256 = int(st[c, cv2.CC_STAT_AREA])
-        dmax, dperp = feret(cm, scale)
-        cx, cy = cen[c]
-        ring = band & cv2.dilate(cm, np.ones((9, 9), np.uint8))
-        f = dict(id=n, kind='finding', area_px256=a256, area_px_orig=round(a256 * scale ** 2),
-                 area_pct_head=round(100 * a256 / head_px, 2),
-                 dmax_px=round(dmax, 1), dperp_px=round(dperp, 1),
-                 half='левая' if cx < 128 else 'правая',
-                 vert='верхняя' if cy < 256 / 3 else ('нижняя' if cy > 2 * 256 / 3 else 'средняя'),
-                 centroid256=[round(float(cx), 1), round(float(cy), 1)],
-                 bbox256=[int(st[c, 0]), int(st[c, 1]), int(st[c, 2]), int(st[c, 3])],
-                 mean_prob=round(float(pm[cm > 0].mean()), 3),
-                 band_ratio=round(float(ring.sum()) / max(a256, 1), 2),
-                 models_agree=int(sum(((m_ >= C['contour_thr']) & (cm > 0)).sum() > 0.3 * a256 for m_ in per_model)),
-                 n_models=len(per_model))
-        if pixel_spacing_mm:
-            f['dmax_mm'] = round(dmax * pixel_spacing_mm, 1)
-            f['dperp_mm'] = round(dperp * pixel_spacing_mm, 1)
-            f['area_mm2'] = round(a256 * scale ** 2 * pixel_spacing_mm ** 2, 1)
-        findings.append(f)
+    findings = describe(mask, dict(prob=pm, band=band, per_model=per_model), C, scale, head_px, pixel_spacing_mm)
     zones = []
     k2, lab2, st2, cen2 = cv2.connectedComponentsWithStats(review)
     for n, c in enumerate(sorted(range(1, k2), key=lambda c: -st2[c, cv2.CC_STAT_AREA]), 1):
         zones.append(dict(id=n, kind='review', area_px256=int(st2[c, cv2.CC_STAT_AREA]),
-                          half='левая' if cen2[c][0] < 128 else 'правая',
+                          half='центр' if abs(cen2[c][0] - 128) < 15 else ('левая' if cen2[c][0] < 128 else 'правая'),
                           centroid256=[round(float(cen2[c][0]), 1), round(float(cen2[c][1]), 1)],
                           bbox256=[int(st2[c, 0]), int(st2[c, 1]), int(st2[c, 2]), int(st2[c, 3])],
                           max_prob=round(float(pmax[lab2 == c].max()), 3)))
@@ -225,7 +233,8 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
         p_tumor=round(p_tumor, 4), tumor=bool(tumor), top_type=CLASSES[top], top_type_p=round(top_p, 4),
         findings=findings, review_zones=zones, flags=flags, head_px256=head_px,
         model_version=M.version, calib=dict(C),
-        arrays=dict(x256=x256, prob=pm, prob_max=pmax, prob_std=pstd, mask=mask, band=band, review=review, head=hm),
+        arrays=dict(x256=x256, prob=pm, prob_max=pmax, prob_std=pstd, mask=mask, band=band, review=review, head=hm,
+                    per_model=per_model.astype(np.float32)),
     )
 
 
@@ -259,3 +268,34 @@ def overlay(res, show_band=True, show_review=True, mask=None):
 
 def to_json(res):
     return {k: v for k, v in res.items() if k != 'arrays'}
+
+
+def recompute(res, mask, edited_ids=()):
+    """Находки по маске после правок врача (порог, удаление, добавление зоны, кисть)."""
+    a = res['arrays']
+    F = describe(mask, a, res['calib'], res['scale'], res['head_px256'], res.get('pixel_spacing_mm'))
+    for f in F:
+        f['edited'] = bool(edited_ids)
+    return F
+
+
+def mask_at(res, thr):
+    """Контур при другом пороге (ползунок в интерфейсе врача)."""
+    return clean_mask(res['arrays']['prob'], thr, res['calib']['min_area'])
+
+
+def zone_mask(res, zone_id):
+    """Маска зоны дополнительного просмотра (чтобы врач мог сделать её находкой)."""
+    a = res['arrays']
+    k, lab = cv2.connectedComponents(a['review'])
+    for z in res['review_zones']:
+        if z['id'] == zone_id:
+            x, y = [int(round(v)) for v in z['centroid256']]
+            x0, y0, w0, h0 = z['bbox256']
+            sub = lab[y0:y0 + h0, x0:x0 + w0]
+            vals, cnt = np.unique(sub[sub > 0], return_counts=True)
+            if len(vals):
+                region = (lab == vals[np.argmax(cnt)])
+                grow = (a['prob_max'] >= res['calib']['review_max']) & (cv2.dilate(region.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0)
+                return (region | grow).astype(np.uint8)
+    return np.zeros_like(a['mask'])
