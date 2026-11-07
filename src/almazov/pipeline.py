@@ -271,6 +271,8 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
         findings=[] if refused else findings, review_zones=[] if refused else zones, flags=flags, head_px256=head_px,
         refused=refused, checks=[dict(level=a, code=b, text=c) for a, b, c in checks], input_info=input_info,
         dicom={k: v for k, v in dinfo.items() if k != 'phi_present'} if dinfo else None,
+        auto_sequence=input_info.get('seq'), auto_sequence_p=input_info.get('seq_p'),
+        auto_plane=input_info.get('plane'), auto_plane_p=input_info.get('plane_p'),
         deidentified=bool(dinfo and dinfo.get('phi_present')),
         model_version=M.version, calib=dict(C),
         arrays=dict(x256=x256, prob=pm, prob_max=pmax, prob_std=pstd, mask=mask, band=band, review=review, head=hm,

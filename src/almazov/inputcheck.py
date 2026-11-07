@@ -81,9 +81,11 @@ def feature_checks(fm, feat):
     if r['ood']:
         out.append((WARN, 'ood', 'Снимок заметно отличается от тех, на которых система обучалась и проверялась: результат может быть недостоверен.'))
     seq, sp = r.get('seq'), r.get('seq_p', 0)
-    if seq in ('T2', 'FLAIR') and sp >= 0.8:
+    if seq == 'КТ' and sp >= 0.7:
+        out.append((REFUSE, 'ct', f'Похоже на КТ, а не МРТ (уверенность {sp:.0%}): система работает только со срезами МРТ.'))
+    elif seq in ('T2', 'FLAIR') and sp >= 0.8:
         out.append((REFUSE, 'sequence', f'Похоже на режим {seq} (уверенность {sp:.0%}): система проверена на T1 с контрастом. '
                                        'Вывод «опухоли нет» для этого режима не делается.'))
-    elif seq and seq != 'T1c' and sp >= 0.6:
+    elif seq and seq not in ('T1', 'T1c') and sp >= 0.6:
         out.append((WARN, 'sequence', f'Режим, вероятно, {seq} ({sp:.0%}), а не T1 с контрастом — результат менее надёжен.'))
     return out, r

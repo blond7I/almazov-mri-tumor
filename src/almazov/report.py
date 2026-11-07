@@ -59,8 +59,11 @@ def build(res, findings=None, zones=None, meta=None):
 
     # 1. Исходные данные
     dc = res.get('dicom') or {}
-    seq_txt = meta.get('sequence') or (f'{dc["sequence_hint"]} (по описанию серии DICOM)' if dc.get('sequence_hint') else 'не указан')
-    plane_txt = meta.get('plane') or (f'{dc["plane"]} (по ориентации DICOM)' if dc.get('plane') else 'не указана')
+    auto_seq = (f'{res["auto_sequence"]}-взвешенный' if res.get('auto_sequence') in ('T1', 'T2') else res.get('auto_sequence'))
+    seq_txt = meta.get('sequence') or (f'{dc["sequence_hint"]} (по описанию серии DICOM)' if dc.get('sequence_hint') else
+                                       (f'{auto_seq} — оценка системы ({res["auto_sequence_p"]:.0%}), уточните' if res.get('auto_sequence') else 'не указан'))
+    plane_txt = meta.get('plane') or (f'{dc["plane"]} (по ориентации DICOM)' if dc.get('plane') else
+                                      (f'{res["auto_plane"]} — оценка системы ({res["auto_plane_p"]:.0%})' if res.get('auto_plane') else 'не указана'))
     src = [f'Изображение: {meta.get("file") or res.get("source") or "срез МРТ"}{" (DICOM)" if dc else ""}, {w}×{h} пикс.',
            f'Размер пикселя: {_num(px_mm, 3) + " мм" if px_mm else ("неизвестен (JPG/PNG) — размеры даны в пикселях" if not dc else "в DICOM не указан или пиксели неквадратные — размеры в пикселях")}.',
            f'Режим МРТ: {seq_txt}; плоскость: {plane_txt}.',
