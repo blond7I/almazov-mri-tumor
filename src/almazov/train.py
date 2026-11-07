@@ -177,6 +177,7 @@ def cls_metrics(P, Y):
     pr = P.argmax(1); tt = Y != NO_TUMOR
     return dict(n=int(len(Y)), accuracy=float((pr == Y).mean()), macro_f1=float(f1_score(Y, pr, average='macro')),
                 glioma_recall=float((pr[Y == 0] == 0).mean()) if (Y == 0).any() else None,
+                recall={CLASSES[k]: (float((pr[Y == k] == k).mean()) if (Y == k).any() else None) for k in range(4)},
                 tumor_sens=float(((pr != NO_TUMOR) & tt).sum() / max(tt.sum(), 1)),
                 tumor_spec=float(((pr == NO_TUMOR) & ~tt).sum() / max((~tt).sum(), 1)),
                 tumor_auc=float(roc_auc_score(tt, 1 - P[:, NO_TUMOR])) if 0 < tt.sum() < len(Y) else None)
