@@ -1,0 +1,60 @@
+{
+ "models": [
+  {
+   "tag": "cls_s1",
+   "kind": "cls",
+   "parts": [
+    "cls_s1.pt.part0",
+    "cls_s1.pt.part1",
+    "cls_s1.pt.part2"
+   ],
+   "sha256": "cdcb56ac439a02d04af0e8dac155d11d62ad846034e828ac37550d4cf89cc435",
+   "mb": 47.2
+  },
+  {
+   "tag": "cls_s2",
+   "kind": "cls",
+   "parts": [
+    "cls_s2.pt.part0",
+    "cls_s2.pt.part1",
+    "cls_s2.pt.part2"
+   ],
+   "sha256": "55a702e488472f75b1e9950ead3535deb5943f02d45e3c21868ef037fa4dce38",
+   "mb": 47.2
+  },
+  {
+   "tag": "seg_s1",
+   "kind": "seg",
+   "parts": [
+    "seg_s1.pt.part0",
+    "seg_s1.pt.part1",
+    "seg_s1.pt.part2"
+   ],
+   "sha256": "4cc9e9578efaa2778a1cb57bbad530e50f4f99196e10d61372fdea1b83522998",
+   "mb": 49.0
+  },
+  {
+   "tag": "seg_s2",
+   "kind": "seg",
+   "parts": [
+    "seg_s2.pt.part0",
+    "seg_s2.pt.part1",
+    "seg_s2.pt.part2"
+   ],
+   "sha256": "1fe53d8f41f805b3fa25da9e6b9435c5100feeb95aad85f31b5acab4bc1a616f",
+   "mb": 49.0
+  },
+  {
+   "tag": "seg_s3",
+   "kind": "seg",
+   "parts": [
+    "seg_s3.pt.part0",
+    "seg_s3.pt.part1",
+    "seg_s3.pt.part2"
+   ],
+   "sha256": "49a4448bab55a0862aa30d5382abf2dafdcea02d189f4ed7bbd9f18f0638bde2",
+   "mb": 49.0
+  }
+ ],
+ "note": "Новые обучения этапа 2 (тот же рецепт, другие seed), float16"
+}
