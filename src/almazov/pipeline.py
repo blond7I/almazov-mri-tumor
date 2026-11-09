@@ -263,8 +263,10 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     if colorfulness > 8:
         flags.append('color_image')
 
+    # итог по наличию (три уровня): «найдено» — и классификатор, и контур; «нужен просмотр» — только одно из двух; «не найдено»
+    level = None if refused else ('found' if tumor and findings else ('review' if tumor or findings else 'none'))
     return dict(
-        source=source_name, orig_hw=[h, w], scale=scale, pad_yx=[oy, ox], pixel_spacing_mm=pixel_spacing_mm,
+        source=source_name, orig_hw=[h, w], scale=scale, pad_yx=[oy, ox], pixel_spacing_mm=pixel_spacing_mm, level=level,
         probs={CLASSES[i]: round(float(P[i]), 4) for i in range(4)},
         probs_by_model=[{CLASSES[i]: round(float(p[i]), 4) for i in range(4)} for p in P_models],
         p_tumor=round(p_tumor, 4), tumor=bool(tumor), top_type=CLASSES[top], top_type_p=round(top_p, 4),

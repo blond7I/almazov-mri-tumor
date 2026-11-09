@@ -1,0 +1,163 @@
+{
+ "rule": "found = classifier tumor (P>=0.5) AND contour; review = exactly one of them; none = neither; refused images excluded",
+ "note": "правило выбрано после просмотра BRISC (9.11); тест организаторов — здоровые срезы, на которых правило не подбиралось",
+ "organizer_test_normals": {
+  "n": 29,
+  "found": 0,
+  "found_share": 0.0,
+  "found_ci": [
+   0.0,
+   0.117
+  ],
+  "review": 4,
+  "review_share": 0.1379,
+  "review_ci": [
+   0.055,
+   0.3056
+  ],
+  "none": 25,
+  "none_share": 0.8621,
+  "none_ci": [
+   0.6944,
+   0.945
+  ]
+ },
+ "organizer_test_normals_T1": {
+  "n": 21,
+  "found": 0,
+  "found_share": 0.0,
+  "found_ci": [
+   0.0,
+   0.1546
+  ],
+  "review": 4,
+  "review_share": 0.1905,
+  "review_ci": [
+   0.0767,
+   0.4
+  ],
+  "none": 17,
+  "none_share": 0.8095,
+  "none_ci": [
+   0.6,
+   0.9233
+  ]
+ },
+ "brisc_external_normals": {
+  "n": 960,
+  "found": 8,
+  "found_share": 0.0083,
+  "found_ci": [
+   0.0042,
+   0.0164
+  ],
+  "review": 79,
+  "review_share": 0.0823,
+  "review_ci": [
+   0.0665,
+   0.1014
+  ],
+  "none": 873,
+  "none_share": 0.9094,
+  "none_ci": [
+   0.8895,
+   0.9259
+  ]
+ },
+ "brisc_matched_our_test_tumors": {
+  "n": 723,
+  "found": 712,
+  "found_share": 0.9848,
+  "found_ci": [
+   0.973,
+   0.9915
+  ],
+  "review": 11,
+  "review_share": 0.0152,
+  "review_ci": [
+   0.0085,
+   0.027
+  ],
+  "none": 0,
+  "none_share": 0.0,
+  "none_ci": [
+   0.0,
+   0.0053
+  ]
+ },
+ "brisc_matched_our_test_tumors_by_class": {
+  "Глиома": {
+   "n": 198,
+   "found": 195,
+   "found_share": 0.9848,
+   "found_ci": [
+    0.9564,
+    0.9948
+   ],
+   "review": 3,
+   "review_share": 0.0152,
+   "review_ci": [
+    0.0052,
+    0.0436
+   ],
+   "none": 0,
+   "none_share": 0.0,
+   "none_ci": [
+    0.0,
+    0.019
+   ]
+  },
+  "Менингиома": {
+   "n": 259,
+   "found": 252,
+   "found_share": 0.973,
+   "found_ci": [
+    0.9453,
+    0.9868
+   ],
+   "review": 7,
+   "review_share": 0.027,
+   "review_ci": [
+    0.0132,
+    0.0547
+   ],
+   "none": 0,
+   "none_share": 0.0,
+   "none_ci": [
+    0.0,
+    0.0146
+   ]
+  },
+  "Опухоль гипофиза": {
+   "n": 266,
+   "found": 265,
+   "found_share": 0.9962,
+   "found_ci": [
+    0.979,
+    0.9993
+   ],
+   "review": 1,
+   "review_share": 0.0038,
+   "review_ci": [
+    0.0007,
+    0.021
+   ],
+   "none": 0,
+   "none_share": 0.0,
+   "none_ci": [
+    0.0,
+    0.0142
+   ]
+  }
+ },
+ "classifier_only_false_alarm": {
+  "organizer_test_normals": [
+   3,
+   29
+  ],
+  "brisc_external_normals": [
+   81,
+   960
+  ]
+ }
+}

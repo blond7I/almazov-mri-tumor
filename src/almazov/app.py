@@ -68,10 +68,16 @@ def build_ui(M, examples=()):
 
     def status(st, note=''):
         r = st['res']
+        if st.get('blind'):          # режим «обвести с нуля»: никаких подсказок ИИ в статусе
+            return f'**Режим «обвести с нуля»**: находок врача: {len(st["findings"])}.' + (f'\n\n{note}' if note else '')
         fl = [FLAG_TEXT.get(x, x) for x in r['flags']]
         if r.get('refused'):
             return '🚫 **Анализ не выполнен.** ' + ' '.join(c['text'] for c in r['checks'] if c['level'] == 'refuse')
-        s = f'**Модели:** {r["model_version"]}.  **Находок:** {len(st["findings"])}, зон просмотра: {len(st["zones"])}.'
+        lev = ('found' if r['tumor'] and st['findings'] else ('review' if r['tumor'] or st['findings'] else 'none'))
+        s = {'found': '🔴 **Опухоль найдена** (классификатор и контур согласны).',
+             'review': '🟡 **Нужен просмотр**: классификатор и контур не согласны.',
+             'none': '🟢 **Опухоль не найдена.**'}[lev] + '\n\n'
+        s += f'**Модели:** {r["model_version"]}.  **Находок:** {len(st["findings"])}, зон просмотра: {len(st["zones"])}.'
         if fl:
             s += '\n\n⚠️ ' + ' · '.join(fl)
         cn = cam_note(st)
