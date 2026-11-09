@@ -1,0 +1,107 @@
+19:20:37 Скачиваю Figshare 3381290...
+19:20:41 Скачиваю Figshare 3381293...
+19:20:47 Скачиваю Figshare 3381296...
+19:20:57 Скачиваю Figshare 3381302...
+19:21:48 Figshare собран: 3064 срезов
+19:22:21 Снимков сопоставлено с разбиением: 9150/9150; снимков вне разбиения: 2914
+19:22:25 Разбиение: обучение 6159, валидация 1419, тест 1572 (уникальных 566); Figshare пациентов 152/38/43, срезов 2004/499/561; маски на снимках организаторов: 5936
+19:22:34 Внешние здоровые BRISC: 1147 (групп 904); в обучение 518, отложено 629
+19:23:29 [cls_n1] эпоха 1/15: loss 1.349  val macro-F1 0.4749  лучший 0.4749  42 с
+19:24:08 [cls_n1] эпоха 2/15: loss 0.775  val macro-F1 0.8708  лучший 0.8708  38 с
+19:24:49 [cls_n1] эпоха 3/15: loss 0.383  val macro-F1 0.9175  лучший 0.9175  40 с
+19:25:28 [cls_n1] эпоха 4/15: loss 0.309  val macro-F1 0.9367  лучший 0.9367  39 с
+19:26:08 [cls_n1] эпоха 5/15: loss 0.273  val macro-F1 0.9437  лучший 0.9437  40 с
+19:26:48 [cls_n1] эпоха 6/15: loss 0.257  val macro-F1 0.9534  лучший 0.9534  40 с
+19:27:28 [cls_n1] эпоха 7/15: loss 0.246  val macro-F1 0.9290  лучший 0.9534  39 с
+19:28:07 [cls_n1] эпоха 8/15: loss 0.236  val macro-F1 0.9436  лучший 0.9534  39 с
+19:28:47 [cls_n1] эпоха 9/15: loss 0.230  val macro-F1 0.9401  лучший 0.9534  40 с
+19:29:27 [cls_n1] эпоха 10/15: loss 0.225  val macro-F1 0.9402  лучший 0.9534  40 с
+19:30:07 [cls_n1] эпоха 11/15: loss 0.222  val macro-F1 0.9507  лучший 0.9534  39 с
+19:30:46 [cls_n1] эпоха 12/15: loss 0.219  val macro-F1 0.9465  лучший 0.9534  39 с
+19:31:26 [cls_n1] эпоха 13/15: loss 0.220  val macro-F1 0.9515  лучший 0.9534  39 с
+19:32:06 [cls_n1] эпоха 14/15: loss 0.218  val macro-F1 0.9483  лучший 0.9534  39 с
+19:32:45 [cls_n1] эпоха 15/15: loss 0.217  val macro-F1 0.9501  лучший 0.9534  39 с
+19:33:50 [cls_n2] эпоха 1/15: loss 1.351  val macro-F1 0.5688  лучший 0.5688  39 с
+19:34:30 [cls_n2] эпоха 2/15: loss 0.736  val macro-F1 0.8804  лучший 0.8804  39 с
+19:35:10 [cls_n2] эпоха 3/15: loss 0.370  val macro-F1 0.9313  лучший 0.9313  39 с
+19:35:49 [cls_n2] эпоха 4/15: loss 0.298  val macro-F1 0.9281  лучший 0.9313  39 с
+19:36:28 [cls_n2] эпоха 5/15: loss 0.265  val macro-F1 0.9436  лучший 0.9436  39 с
+19:37:08 [cls_n2] эпоха 6/15: loss 0.250  val macro-F1 0.9481  лучший 0.9481  39 с
+19:37:47 [cls_n2] эпоха 7/15: loss 0.240  val macro-F1 0.9525  лучший 0.9525  39 с
+19:38:26 [cls_n2] эпоха 8/15: loss 0.233  val macro-F1 0.9311  лучший 0.9525  39 с
+19:39:06 [cls_n2] эпоха 9/15: loss 0.229  val macro-F1 0.9463  лучший 0.9525  39 с
+19:39:45 [cls_n2] эпоха 10/15: loss 0.225  val macro-F1 0.9425  лучший 0.9525  39 с
+19:40:24 [cls_n2] эпоха 11/15: loss 0.221  val macro-F1 0.9452  лучший 0.9525  39 с
+19:41:03 [cls_n2] эпоха 12/15: loss 0.219  val macro-F1 0.9397  лучший 0.9525  39 с
+19:41:42 [cls_n2] эпоха 13/15: loss 0.217  val macro-F1 0.9484  лучший 0.9525  39 с
+19:42:22 [cls_n2] эпоха 14/15: loss 0.217  val macro-F1 0.9500  лучший 0.9525  39 с
+19:43:01 [cls_n2] эпоха 15/15: loss 0.219  val macro-F1 0.9461  лучший 0.9525  39 с
+19:44:35 {
+ "note": "классификатор без фильтра входа; ансамбль = среднее softmax с отражением; здоровые теста — все копии (не уникальные)",
+ "split": {
+  "external_normals": 1147,
+  "train": 518,
+  "holdout": 629
+ },
+ "candidates": {
+  "cls_n1": {
+   "val_macro_f1": 0.9534289306397944,
+   "best_epoch": 6,
+   "epochs": 15,
+   "seed": 201,
+   "arch": "resnet50"
+  },
+  "cls_n2": {
+   "val_macro_f1": 0.9525007515401867,
+   "best_epoch": 7,
+   "epochs": 15,
+   "seed": 202,
+   "arch": "resnet50"
+  }
+ },
+ "current": {
+  "val_acc": 0.9506694855532065,
+  "val_macro_f1": 0.9534210902306476,
+  "test_acc": 0.9230279898218829,
+  "test_macro_f1": 0.9262155396396446,
+  "test_tumor_sens": 0.9879032258064516,
+  "brisc_holdout_false_alarm": 0.03815580286168521,
+  "brisc_holdout_n": 629,
+  "new_images_acc": 0.782608695652174,
+  "new_glioma_recall": 0.4117647058823529,
+  "test_normals_T1_false_alarm": "6/83",
+  "test_normals_T2_false_alarm": "0/63",
+  "test_normals_FLAIR_false_alarm": "0/124",
+  "test_normals_КТ_false_alarm": "0/47"
+ },
+ "candidates_only": {
+  "val_acc": 0.9499647639182522,
+  "val_macro_f1": 0.9528209267337104,
+  "test_acc": 0.9141221374045801,
+  "test_macro_f1": 0.915508620866987,
+  "test_tumor_sens": 0.978225806451613,
+  "brisc_holdout_false_alarm": 0.001589825119236884,
+  "brisc_holdout_n": 629,
+  "new_images_acc": 0.7934782608695652,
+  "new_glioma_recall": 0.5294117647058824,
+  "test_normals_T1_false_alarm": "4/83",
+  "test_normals_T2_false_alarm": "0/63",
+  "test_normals_FLAIR_false_alarm": "0/124",
+  "test_normals_КТ_false_alarm": "0/47"
+ },
+ "current_plus_candidates": {
+  "val_acc": 0.95630725863284,
+  "val_macro_f1": 0.9585896338204046,
+  "test_acc": 0.9293893129770993,
+  "test_macro_f1": 0.9314367935823002,
+  "test_tumor_sens": 0.9862903225806452,
+  "brisc_holdout_false_alarm": 0.0047694753577106515,
+  "brisc_holdout_n": 629,
+  "new_images_acc": 0.8478260869565217,
+  "new_glioma_recall": 0.5882352941176471,
+  "test_normals_T1_false_alarm": "3/83",
+  "test_normals_T2_false_alarm": "0/63",
+  "test_normals_FLAIR_false_alarm": "0/124",
+  "test_normals_КТ_false_alarm": "0/47"
+ }
+}
