@@ -1,0 +1,161 @@
+{
+ "models": "cls×3 seg×4; calib=есть",
+ "mapping": {
+  "train": 2547,
+  "external": 1153,
+  "extra-linked": 911,
+  "test": 735,
+  "val": 637,
+  "extra-new": 17
+ },
+ "mapping_by_class": {
+  "0": {
+   "external": 0,
+   "extra-linked": 282,
+   "extra-new": 0,
+   "test": 198,
+   "train": 754,
+   "val": 167
+  },
+  "1": {
+   "external": 2,
+   "extra-linked": 304,
+   "extra-new": 10,
+   "test": 264,
+   "train": 827,
+   "val": 228
+  },
+  "2": {
+   "external": 4,
+   "extra-linked": 318,
+   "extra-new": 1,
+   "test": 266,
+   "train": 932,
+   "val": 236
+  },
+  "3": {
+   "external": 1147,
+   "extra-linked": 7,
+   "extra-new": 6,
+   "test": 7,
+   "train": 34,
+   "val": 6
+  }
+ },
+ "our_test": {
+  "n": 735,
+  "accuracy": 0.9361,
+  "accuracy_ci": [
+   0.916,
+   0.952
+  ],
+  "by_class": {
+   "Глиома": "182/198",
+   "Менингиома": "242/264",
+   "Опухоли нет": "6/7",
+   "Опухоль гипофиза": "258/266"
+  },
+  "tumors": 728,
+  "tumor_suspected": 724,
+  "dice_mean": 0.7884,
+  "dice_by_class": {
+   "Глиома": 0.7216,
+   "Менингиома": 0.8396,
+   "Опухоль гипофиза": 0.7883
+  },
+  "normals": 7,
+  "normals_refused": 0,
+  "normals_answered": 7,
+  "normal_false_alarm": 1,
+  "normal_false_alarm_ci": [
+   0.026,
+   0.513
+  ],
+  "normal_false_contour": 1,
+  "normal_auto_sequence": {
+   "T1": 7
+  },
+  "refused_all": 5
+ },
+ "external": {
+  "n": 1153,
+  "accuracy": 0.9297,
+  "accuracy_ci": [
+   0.914,
+   0.943
+  ],
+  "by_class": {
+   "Менингиома": "2/2",
+   "Опухоли нет": "1066/1147",
+   "Опухоль гипофиза": "4/4"
+  },
+  "tumors": 6,
+  "tumor_suspected": 6,
+  "dice_mean": 0.8289,
+  "dice_by_class": {
+   "Менингиома": 0.7913,
+   "Опухоль гипофиза": 0.8476
+  },
+  "normals": 1147,
+  "normals_refused": 187,
+  "normals_answered": 960,
+  "normal_false_alarm": 81,
+  "normal_false_alarm_ci": [
+   0.068,
+   0.104
+  ],
+  "normal_false_contour": 14,
+  "normal_auto_sequence": {
+   "T1": 725,
+   "T2": 198,
+   "FLAIR": 181,
+   "КТ": 43
+  },
+  "refused_all": 187
+ },
+ "extra_new": {
+  "n": 17,
+  "accuracy": 0.7647,
+  "accuracy_ci": [
+   0.527,
+   0.904
+  ],
+  "by_class": {
+   "Менингиома": "6/10",
+   "Опухоли нет": "6/6",
+   "Опухоль гипофиза": "1/1"
+  },
+  "tumors": 11,
+  "tumor_suspected": 9,
+  "dice_mean": 0.2683,
+  "dice_by_class": {
+   "Менингиома": 0.2754,
+   "Опухоль гипофиза": 0.2114
+  },
+  "normals": 6,
+  "normals_refused": 0,
+  "normals_answered": 6,
+  "normal_false_alarm": 0,
+  "normal_false_alarm_ci": [
+   0.0,
+   0.39
+  ],
+  "normal_false_contour": 0,
+  "normal_auto_sequence": {
+   "T1": 6
+  },
+  "refused_all": 2
+ },
+ "sequence_agreement": {
+  "опухоли": {
+   "T1": 253,
+   "другое/не ясно": 1
+  },
+  "здоровые": {
+   "T1": 14,
+   "другое/не ясно": 1,
+   "T2": 1
+  },
+  "n": 270
+ }
+}

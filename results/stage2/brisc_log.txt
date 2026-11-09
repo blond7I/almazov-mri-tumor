@@ -1,0 +1,26 @@
+18:41:17 device cuda BRISC /kaggle/input/datasets/briscdataset/brisc2025/brisc2025
+18:41:17 Скачиваю архив организаторов...
+18:41:34 gdown: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1MDAF0FXIeg89_w-G9-nKBv46tmzpY77i
+
+but Gdown can't. Please check connections and permissions.
+18:41:34 Скачиваю Figshare 3381290...
+18:41:39 Скачиваю Figshare 3381293...
+18:41:43 Скачиваю Figshare 3381296...
+18:41:47 Скачиваю Figshare 3381302...
+18:42:42 Figshare собран: 3064 срезов
+18:43:17 Снимков сопоставлено с разбиением: 9150/9150; снимков вне разбиения: 2914
+18:43:23 Разбиение: обучение 6159, валидация 1419, тест 1572 (уникальных 566); Figshare пациентов 152/38/43, срезов 2004/499/561; маски на снимках организаторов: 5936
+18:51:14 BRISC: 6000 снимков ({0: 1401, 1: 1635, 2: 1757, 3: 1207}), масок 4793, 435 с
+18:51:27 BRISC -> наше разбиение: {'train': 2547, 'external': 1153, 'extra-linked': 911, 'test': 735, 'val': 637, 'extra-new': 17}
+18:51:42 Модели: cls×3 seg×4; calib=есть
+18:53:38 BRISC ['test']: {"n": 735, "accuracy": 0.9361, "accuracy_ci": [0.916, 0.952], "by_class": {"Глиома": "182/198", "Менингиома": "242/264", "Опухоли нет": "6/7", "Опухоль гипофиза": "258/266"}, "tumors": 728, "tumor_suspected": 724, "dice_mean": 0.7884, "dice_by_class": {"Глиома": 0.7216, "Менингиома": 0.8396, "Опухоль гипофиза": 0.7883}, "normals": 7, "normals_refused": 0, "normals_answered": 7, "normal_false_alarm": 1, "normal_false_alarm_ci": [0.026, 0.513], "normal_false_contour": 1, "normal_auto_sequence": {"T1": 7}, "refused_all": 5}
+18:56:22 BRISC ['external']: {"n": 1153, "accuracy": 0.9297, "accuracy_ci": [0.914, 0.943], "by_class": {"Менингиома": "2/2", "Опухоли нет": "1066/1147", "Опухоль гипофиза": "4/4"}, "tumors": 6, "tumor_suspected": 6, "dice_mean": 0.8289, "dice_by_class": {"Менингиома": 0.7913, "Опухоль гипофиза": 0.8476}, "normals": 1147, "normals_refused": 187, "normals_answered": 960, "normal_false_alarm": 81, "normal_false_alarm_ci": [0.068, 0.104], "normal_false_contour": 14, "normal_auto_sequence": {"T1": 725, "T2": 198, "FLAIR": 181, "КТ": 43}, "refused_all": 187}
+18:56:24 BRISC ['extra-new']: {"n": 17, "accuracy": 0.7647, "accuracy_ci": [0.527, 0.904], "by_class": {"Менингиома": "6/10", "Опухоли нет": "6/6", "Опухоль гипофиза": "1/1"}, "tumors": 11, "tumor_suspected": 9, "dice_mean": 0.2683, "dice_by_class": {"Менингиома": 0.2754, "Опухоль гипофиза": 0.2114}, "normals": 6, "normals_refused": 0, "normals_answered": 6, "normal_false_alarm": 0, "normal_false_alarm_ci": [0.0, 0.39], "normal_false_contour": 0, "normal_auto_sequence": {"T1": 6}, "refused_all": 2}
