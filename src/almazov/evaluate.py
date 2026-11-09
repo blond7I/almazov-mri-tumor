@@ -70,15 +70,24 @@ def u8f(a):
 
 # ------------------------------------------------------------------ загрузка выгрузки
 def load(res_dir):
+    """Члены ансамбля: модели этапа 1 и этапа 2 + (по переменной ALMAZOV_EXTRA_MEMBERS, через запятую) кандидаты,
+    например seg_b1,seg_b2,cls_b1 — их файлы в том же формате кладутся в ту же папку (extra_b.npz — их ответы на новых снимках)."""
+    import os
     d = Path(res_dir)
     E = np.load(d / 'eval_data.npz', allow_pickle=True)
-    segs = [k for k in ['seg_stage1', 'seg_s1', 'seg_s2', 'seg_s3'] if (d / f'{k}.npz').exists()]
-    clss = [k for k in ['cls_stage1', 'cls_s1', 'cls_s2'] if (d / f'{k}.npz').exists()]
+    more = [m.strip() for m in os.environ.get('ALMAZOV_EXTRA_MEMBERS', '').split(',') if m.strip()]
+    segs = [k for k in ['seg_stage1', 'seg_s1', 'seg_s2', 'seg_s3'] + [m for m in more if m.startswith('seg_')] if (d / f'{k}.npz').exists()]
+    clss = [k for k in ['cls_stage1', 'cls_s1', 'cls_s2'] + [m for m in more if m.startswith('cls_')] if (d / f'{k}.npz').exists()]
     S = {k: np.load(d / f'{k}.npz') for k in segs}
     C = {k: np.load(d / f'{k}.npz') for k in clss}
     ex = None
     if (d / 'extra.npz').exists():
-        ex = (np.load(d / 'extra.npz', allow_pickle=True), pd.read_csv(d / 'extra_meta.csv', keep_default_na=False))
+        z = np.load(d / 'extra.npz', allow_pickle=True)
+        z = {k: z[k] for k in z.files}
+        if more and (d / 'extra_b.npz').exists():
+            zb = np.load(d / 'extra_b.npz', allow_pickle=True)
+            z.update({k: zb[k] for k in zb.files})
+        ex = (z, pd.read_csv(d / 'extra_meta.csv', keep_default_na=False))
     return E, S, C, segs, clss, ex
 
 
@@ -425,7 +434,7 @@ def run(res_dir, out_dir, calib_out=None):
                                   stage1=cls_metrics(Px1, y), ensemble=cls_metrics(PxE, y),
                                   acc_ci_stage1=boot(lambda ii: (Px1[ii].argmax(1) == y[ii]).mean(), g),
                                   acc_ci_ensemble=boot(lambda ii: (PxE[ii].argmax(1) == y[ii]).mean(), g))
-            sk = [k for k in Z.files if k.startswith('seg_')]
+            sk = ['seg_' + k for k in segs if 'seg_' + k in Z]
             if sk:
                 pmx = np.mean([u8f(Z[k]) for k in sk], 0)[nw]
                 has_c = np.array([clean_mask(p).sum() > 0 for p in pmx])

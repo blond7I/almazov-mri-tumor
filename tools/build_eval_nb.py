@@ -19,6 +19,12 @@ src = sorted(glob.glob('/kaggle/input/**/stage2_results.zip', recursive=True))
 assert src, 'Подключите выход ноутбука обучения: Add Input -> Your Work -> notebook80e1793962'
 RES, OUT = '/tmp/res', '/kaggle/working/eval'
 shutil.rmtree(RES, ignore_errors=True); os.makedirs(RES); zipfile.ZipFile(src[0]).extractall(RES)
+# кандидаты из ноутбука BRISC (если подключён его выход): их карты и логиты в том же формате -> оценка «текущий + кандидаты»
+srcb = sorted(glob.glob('/kaggle/input/**/stage2b_results.zip', recursive=True))
+if srcb:
+    zipfile.ZipFile(srcb[0]).extractall(RES)
+    os.environ['ALMAZOV_EXTRA_MEMBERS'] = ','.join(sorted(os.path.basename(p)[:-4] for p in glob.glob(RES + '/seg_b*.npz') + glob.glob(RES + '/cls_b*.npz')))
+    print('Кандидаты:', os.environ['ALMAZOV_EXTRA_MEMBERS'])
 os.makedirs(OUT, exist_ok=True)
 for f in glob.glob(os.path.dirname(src[0]) + '/summary.json') + glob.glob(os.path.dirname(src[0]) + '/log.txt'):
     shutil.copy(f, OUT)

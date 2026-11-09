@@ -32,11 +32,37 @@ def set_seed(s):
     torch.cuda.manual_seed_all(s)
 
 
+def bigaug(x):
+    """Искажения качества и яркости снимка (по мотивам BigAug, Zhang et al., IEEE TMI 2020): гамма, контраст,
+    размытие/резкость, шум, потеря разрешения, JPEG, неоднородность поля. Вход и выход — float32 0..255, 256x256."""
+    if random.random() < .5:
+        x = 255 * np.power(np.clip(x, 0, 255) / 255, random.uniform(.7, 1.5))
+    if random.random() < .5:
+        m = x.mean(); x = (x - m) * random.uniform(.7, 1.3) + m + random.uniform(-25, 25)
+    r = random.random()
+    if r < .25:
+        x = cv2.GaussianBlur(x, (0, 0), random.uniform(.5, 1.5))
+    elif r < .4:
+        b = cv2.GaussianBlur(x, (0, 0), 1.0); x = x + random.uniform(.3, 1.0) * (x - b)
+    if random.random() < .3:
+        f = random.uniform(.4, .9); n = max(32, int(256 * f))
+        x = cv2.resize(cv2.resize(x, (n, n), interpolation=cv2.INTER_AREA), (256, 256), interpolation=cv2.INTER_LINEAR)
+    if random.random() < .3:
+        x = x + np.random.normal(0, random.uniform(2, 10), x.shape)
+    if random.random() < .3:
+        q = int(random.uniform(30, 90))
+        x = cv2.imdecode(cv2.imencode('.jpg', np.clip(x, 0, 255).astype(np.uint8), [cv2.IMWRITE_JPEG_QUALITY, q])[1], 0).astype(np.float32)
+    if random.random() < .3:
+        g = cv2.resize(np.random.uniform(.8, 1.2, (3, 3)).astype(np.float32), (256, 256), interpolation=cv2.INTER_CUBIC)
+        x = x * g
+    return x.astype(np.float32)
+
+
 class ClsDS(Dataset):
     """Тот же датасет и те же аугментации, что на этапе 1."""
 
-    def __init__(s, A, LAB, idx, aug):
-        s.A, s.LAB, s.idx, s.aug = A, LAB, np.asarray(idx), aug
+    def __init__(s, A, LAB, idx, aug, strong=False):
+        s.A, s.LAB, s.idx, s.aug, s.strong = A, LAB, np.asarray(idx), aug, strong
 
     def __len__(s):
         return len(s.idx)
@@ -55,6 +81,8 @@ class ClsDS(Dataset):
                 x = cv2.GaussianBlur(x, (3, 3), 0)
             if random.random() < .3:
                 x = x + np.random.normal(0, 5, x.shape)
+            if s.strong and random.random() < .8:
+                x = bigaug(x)
         x = (np.clip(x, 0, 255) - MEAN) / STD
         return torch.tensor(x, dtype=torch.float32)[None].repeat(3, 1, 1), int(s.LAB[i])
 
@@ -62,8 +90,8 @@ class ClsDS(Dataset):
 class SegDS(Dataset):
     """Срезы Figshare с масками + снимки организаторов с перенесёнными масками + здоровые с пустой маской."""
 
-    def __init__(s, X, M, aug):
-        s.X, s.M, s.aug = X, M, aug
+    def __init__(s, X, M, aug, strong=False):
+        s.X, s.M, s.aug, s.strong = X, M, aug, strong
 
     def __len__(s):
         return len(s.X)
@@ -80,6 +108,8 @@ class SegDS(Dataset):
             x = cv2.warpAffine(np.ascontiguousarray(x), M_, (256, 256))
             m = cv2.warpAffine(np.ascontiguousarray(m), M_, (256, 256), flags=cv2.INTER_NEAREST)
             x = x * random.uniform(.8, 1.2) + random.uniform(-20, 20)
+            if s.strong and random.random() < .8:
+                x = bigaug(x)
         x = (np.clip(x, 0, 255) - MEAN) / STD
         return torch.tensor(x, dtype=torch.float32)[None], torch.tensor(np.ascontiguousarray(m), dtype=torch.float32)[None]
 
@@ -94,12 +124,12 @@ def _scaler(dev):
 
 
 def train_cls(A, LAB, tr, va, dev, ck_dir, tag, seed, epochs=15, lr=3e-4, bs=64, arch='resnet50', pretrained=True,
-              workers=2, log=print):
+              workers=2, log=print, strong_aug=False):
     """Рецепт классификатора этапа 1 (AdamW, OneCycle, label smoothing 0.05, лучшая эпоха по macro-F1 валидации)."""
     from sklearn.metrics import f1_score
     set_seed(seed)
     m = nets.make_cls(arch, pretrained).to(dev)
-    dl = _loader(ClsDS(A, LAB, tr, True), bs, True, workers, dev)
+    dl = _loader(ClsDS(A, LAB, tr, True, strong_aug), bs, True, workers, dev)
     opt = torch.optim.AdamW(m.parameters(), lr, weight_decay=1e-4)
     sch = torch.optim.lr_scheduler.OneCycleLR(opt, lr, total_steps=epochs * len(dl), pct_start=.15)
     scaler = _scaler(dev)
@@ -132,12 +162,13 @@ def train_cls(A, LAB, tr, va, dev, ck_dir, tag, seed, epochs=15, lr=3e-4, bs=64,
     return m, dict(val_macro_f1=best, best_epoch=best_ep + 1, epochs=epochs, seed=seed, arch=arch, history=hist), CK
 
 
-def train_seg(Xtr, Mtr, Xva, Mva, dev, ck_dir, tag, seed, epochs=20, lr=3e-4, bs=16, pretrained=True, workers=2, log=print):
+def train_seg(Xtr, Mtr, Xva, Mva, dev, ck_dir, tag, seed, epochs=20, lr=3e-4, bs=16, pretrained=True, workers=2, log=print,
+              strong_aug=False):
     """Рецепт сегментации этапа 1 (U-Net ResNet34, Dice+BCE, лучшая эпоха по Dice валидации Figshare)."""
     import segmentation_models_pytorch as smp
     set_seed(seed)
     net = nets.make_seg(pretrained).to(dev)
-    dl = _loader(SegDS(Xtr, Mtr, True), bs, True, workers, dev)
+    dl = _loader(SegDS(Xtr, Mtr, True, strong_aug), bs, True, workers, dev)
     opt = torch.optim.AdamW(net.parameters(), lr, weight_decay=1e-4)
     sch = torch.optim.lr_scheduler.OneCycleLR(opt, lr, total_steps=epochs * len(dl), pct_start=.1)
     scaler = _scaler(dev)
