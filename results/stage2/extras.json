@@ -148,5 +148,28 @@
    "тип неуверен": 1
   },
   "missing": []
+ },
+ "brats_band": {
+  "patients": 49,
+  "slices": 3281,
+  "refused_slices": 1066,
+  "mean_risk": 0.3059,
+  "risk_ci": [
+   0.1479,
+   0.4875
+  ],
+  "coverage": 0.6941,
+  "share_patients_risk_gt_alpha": 0.455,
+  "slices_with_tc": 883,
+  "contour_found_on_tc_slices": 0.17,
+  "mean_dice_tc": 0.09,
+  "false_contour_on_tumor_free_slices": 0.235,
+  "auto_sequence_counts": {
+   "T1": 1119,
+   "T2": 993,
+   "FLAIR": 100,
+   "КТ": 3
+  },
+  "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений"
  }
 }
