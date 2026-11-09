@@ -1,0 +1,91 @@
+{
+ "models": "cls×3 seg×4; calib=есть",
+ "note": "тест Figshare, экспертные маски; Grad-CAM ансамбля для итогового класса; стирание = inpainting Telea маски +5 пикс.",
+ "all": {
+  "n": 561,
+  "pointing_hit": 0.708,
+  "pointing_hit_ci": [
+   0.669,
+   0.744
+  ],
+  "pointing_random": 0.141,
+  "attention_share_in_tumor_median": 0.084,
+  "tumor_area_share_median": 0.026,
+  "enrichment_median": 3.29,
+  "tumor_still_detected_after_erase": 1.0,
+  "same_type_after_erase": 0.863,
+  "p_top_drop_mean": 0.132,
+  "p_top_drop_ctrl_mean": 0.008,
+  "share_big_drop": 0.257
+ },
+ "by_class": {
+  "Глиома": {
+   "n": 253,
+   "pointing_hit": 0.668,
+   "pointing_hit_ci": [
+    0.608,
+    0.723
+   ],
+   "pointing_random": 0.178,
+   "attention_share_in_tumor_median": 0.1,
+   "tumor_area_share_median": 0.045,
+   "enrichment_median": 2.46,
+   "tumor_still_detected_after_erase": 1.0,
+   "same_type_after_erase": 0.87,
+   "p_top_drop_mean": 0.109,
+   "p_top_drop_ctrl_mean": 0.005,
+   "share_big_drop": 0.225
+  },
+  "Менингиома": {
+   "n": 137,
+   "pointing_hit": 0.92,
+   "pointing_hit_ci": [
+    0.862,
+    0.955
+   ],
+   "pointing_random": 0.146,
+   "attention_share_in_tumor_median": 0.14,
+   "tumor_area_share_median": 0.029,
+   "enrichment_median": 4.45,
+   "tumor_still_detected_after_erase": 1.0,
+   "same_type_after_erase": 0.715,
+   "p_top_drop_mean": 0.308,
+   "p_top_drop_ctrl_mean": 0.003,
+   "share_big_drop": 0.555
+  },
+  "Опухоль гипофиза": {
+   "n": 171,
+   "pointing_hit": 0.596,
+   "pointing_hit_ci": [
+    0.522,
+    0.667
+   ],
+   "pointing_random": 0.082,
+   "attention_share_in_tumor_median": 0.041,
+   "tumor_area_share_median": 0.013,
+   "enrichment_median": 3.4,
+   "tumor_still_detected_after_erase": 1.0,
+   "same_type_after_erase": 0.971,
+   "p_top_drop_mean": 0.026,
+   "p_top_drop_ctrl_mean": 0.023,
+   "share_big_drop": 0.064
+  }
+ },
+ "correct_only": {
+  "n": 526,
+  "pointing_hit": 0.717,
+  "pointing_hit_ci": [
+   0.677,
+   0.754
+  ],
+  "pointing_random": 0.142,
+  "attention_share_in_tumor_median": 0.085,
+  "tumor_area_share_median": 0.026,
+  "enrichment_median": 3.3,
+  "tumor_still_detected_after_erase": 1.0,
+  "same_type_after_erase": 0.859,
+  "p_top_drop_mean": 0.14,
+  "p_top_drop_ctrl_mean": 0.007,
+  "share_big_drop": 0.262
+ }
+}
