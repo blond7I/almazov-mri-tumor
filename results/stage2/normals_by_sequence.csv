@@ -1,0 +1,90 @@
+idx,seq_label,refused,tumor,pred,p_tumor,top,top_p,n_find,n_zones,band_ratio,flags,checks,seq,seq_p,plane
+5823,T1,False,False,Опухоли нет,0.0104,Менингиома,0.4262,0,0,0.0,low_resolution,low_resolution,T1,0.85,аксиальная
+5830,FLAIR,True,False,Опухоли нет,0.2217,Глиома,0.9512,0,0,0.0,,sequence,FLAIR,0.927,аксиальная
+5831,КТ,True,False,Опухоли нет,0.0087,Менингиома,0.3834,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.98,аксиальная
+5843,FLAIR,True,False,Опухоли нет,0.0268,Менингиома,0.5917,0,0,0.0,,sequence,FLAIR,0.953,аксиальная
+5844,другое/не ясно,True,False,Опухоли нет,0.01,Глиома,0.3803,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.832,аксиальная
+5846,FLAIR,True,False,Опухоли нет,0.0116,Опухоль гипофиза,0.419,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.99,аксиальная
+5865,FLAIR,True,False,Опухоли нет,0.0488,Менингиома,0.4353,0,0,0.0,,sequence,FLAIR,0.965,аксиальная
+5877,T2,True,False,Опухоли нет,0.011,Опухоль гипофиза,0.361,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.985,аксиальная
+5882,другое/не ясно,True,False,Опухоли нет,0.0077,Опухоль гипофиза,0.35,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.865,аксиальная
+5903,T2,True,False,Опухоли нет,0.008,Глиома,0.3754,0,0,0.0,,sequence,T2,0.997,аксиальная
+5913,FLAIR,True,False,Опухоли нет,0.0064,Глиома,0.3484,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.978,аксиальная
+5921,T2,True,False,Опухоли нет,0.0067,Опухоль гипофиза,0.46,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.959,аксиальная
+5948,T1,False,False,Опухоли нет,0.0267,Менингиома,0.5717,0,0,0.0,,,T1,0.979,аксиальная
+5949,T1,False,False,Опухоли нет,0.007,Менингиома,0.4801,0,0,0.0,,,T1,0.887,аксиальная
+5954,T2,True,False,Опухоли нет,0.0092,Опухоль гипофиза,0.3517,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.95,аксиальная
+5964,FLAIR,True,False,Опухоли нет,0.0097,Глиома,0.365,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.915,аксиальная
+5970,T1,False,False,Опухоли нет,0.0212,Менингиома,0.5947,0,0,0.0,,,T1,0.913,аксиальная
+5972,КТ,True,False,Опухоли нет,0.0201,Глиома,0.4391,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.948,аксиальная
+5998,T2,True,False,Опухоли нет,0.0103,Глиома,0.6375,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.983,аксиальная
+6001,T2,True,False,Опухоли нет,0.0116,Глиома,0.3449,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.95,аксиальная
+6002,FLAIR,True,False,Опухоли нет,0.0108,Опухоль гипофиза,0.3902,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.956,аксиальная
+6033,FLAIR,True,False,Опухоли нет,0.0101,Глиома,0.3764,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.974,аксиальная
+6089,FLAIR,True,False,Опухоли нет,0.0122,Менингиома,0.407,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.946,аксиальная
+6137,FLAIR,True,False,Опухоли нет,0.0147,Глиома,0.3747,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.991,аксиальная
+6142,T2,True,False,Опухоли нет,0.0104,Опухоль гипофиза,0.3836,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.992,аксиальная
+6170,КТ,True,False,Опухоли нет,0.0076,Менингиома,0.3565,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.989,аксиальная
+6255,T2,True,False,Опухоли нет,0.0064,Глиома,0.4529,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.863,аксиальная
+6384,T1,False,False,Опухоли нет,0.0129,Менингиома,0.4972,0,0,0.0,low_resolution,low_resolution,T1,0.98,аксиальная
+6436,FLAIR,True,False,Опухоли нет,0.0123,Менингиома,0.3683,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.829,аксиальная
+6449,КТ,True,False,Опухоли нет,0.0131,Менингиома,0.5543,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.988,аксиальная
+6586,T2,False,False,Опухоли нет,0.0143,Менингиома,0.4032,0,0,0.0,,sequence,T2,0.708,аксиальная
+6747,T2,True,False,Опухоли нет,0.006,Опухоль гипофиза,0.4114,0,0,0.0,,sequence,T2,0.863,сагиттальная
+6748,T1,False,True,Менингиома,0.6387,Менингиома,0.647,0,0,0.0,classifier_tumor_no_contour|type_uncertain|presence_uncertain,,T1,0.996,корональная
+6760,T1,False,False,Опухоли нет,0.0104,Опухоль гипофиза,0.4513,0,0,0.0,low_resolution,low_resolution,T1,0.984,сагиттальная
+6768,T2,True,False,Опухоли нет,0.0222,Глиома,0.4854,0,0,0.0,,sequence,T2,0.997,корональная
+6770,T1,False,False,Опухоли нет,0.019,Опухоль гипофиза,0.7618,0,1,0.0,review_zones|low_resolution,full_frame|low_resolution,T1,0.994,сагиттальная
+6772,T1,False,True,Опухоль гипофиза,0.6605,Опухоль гипофиза,0.9739,0,1,0.0,classifier_tumor_no_contour|presence_uncertain|review_zones|low_resolution,low_resolution,T1,1.0,сагиттальная
+6779,T2,True,False,Опухоли нет,0.0136,Менингиома,0.3423,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.99,аксиальная
+6781,T1,False,False,Опухоли нет,0.0241,Опухоль гипофиза,0.9175,0,1,0.0,review_zones|low_resolution,low_resolution,T1,0.993,сагиттальная
+6788,T1,False,True,Опухоль гипофиза,0.9925,Опухоль гипофиза,0.989,0,1,0.0,classifier_tumor_no_contour|review_zones,,T1,1.0,аксиальная
+6794,другое/не ясно,False,False,Опухоли нет,0.21,Опухоль гипофиза,0.603,0,0,0.0,,full_frame,T1,0.977,аксиальная
+6799,T1,False,False,Опухоли нет,0.0117,Опухоль гипофиза,0.3998,0,0,0.0,low_resolution,low_resolution,T1,0.995,сагиттальная
+6801,T2,False,False,Опухоли нет,0.0092,Глиома,0.3833,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.782,сагиттальная
+6817,FLAIR,True,False,Опухоли нет,0.0128,Глиома,0.3618,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.987,аксиальная
+6828,FLAIR,True,False,Опухоли нет,0.0128,Опухоль гипофиза,0.4517,0,0,0.0,,sequence,FLAIR,0.975,аксиальная
+6837,T2,True,False,Опухоли нет,0.0091,Менингиома,0.4153,0,0,0.0,,sequence,T2,0.98,аксиальная
+6841,T1,False,False,Опухоли нет,0.1726,Опухоль гипофиза,0.4697,0,1,0.0,review_zones,,T1,0.989,сагиттальная
+6867,другое/не ясно,False,False,Опухоли нет,0.0591,Опухоль гипофиза,0.5227,0,0,0.0,,,T1,0.836,аксиальная
+6876,T2,True,False,Опухоли нет,0.0611,Глиома,0.5543,0,0,0.0,,sequence,T2,0.976,аксиальная
+6898,FLAIR,True,False,Опухоли нет,0.0234,Глиома,0.4286,0,0,0.0,,sequence,FLAIR,0.985,аксиальная
+6906,другое/не ясно,False,False,Опухоли нет,0.0425,Опухоль гипофиза,0.5844,0,2,0.0,review_zones,,T1,0.657,корональная
+6924,T1,False,False,Опухоли нет,0.0062,Опухоль гипофиза,0.3988,0,0,0.0,,,T1,0.92,аксиальная
+6932,T1,False,False,Опухоли нет,0.0164,Опухоль гипофиза,0.5325,0,0,0.0,,,T1,0.989,корональная
+6945,FLAIR,True,False,Опухоли нет,0.0162,Менингиома,0.4467,0,0,0.0,,sequence,FLAIR,0.976,аксиальная
+6948,T2,True,False,Опухоли нет,0.0045,Глиома,0.4517,0,0,0.0,,sequence,T2,0.976,аксиальная
+6957,КТ,True,False,Опухоли нет,0.0096,Менингиома,0.3852,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.983,аксиальная
+6994,T2,True,False,Опухоли нет,0.0081,Опухоль гипофиза,0.5085,0,0,0.0,,sequence,T2,0.991,корональная
+7000,T1,False,False,Опухоли нет,0.0146,Менингиома,0.4868,0,0,0.0,low_resolution,full_frame|low_resolution,T1,0.956,сагиттальная
+7001,T2,True,False,Опухоли нет,0.0722,Глиома,0.4126,0,0,0.0,contour_without_classifier|review_zones|low_resolution,low_resolution|sequence,T2,0.972,сагиттальная
+7004,T1,False,False,Опухоли нет,0.012,Глиома,0.3982,1,1,1.85,contour_without_classifier|boundary_uncertain|review_zones|low_resolution,low_resolution,T1,0.964,сагиттальная
+7008,T2,True,False,Опухоли нет,0.0091,Опухоль гипофиза,0.4313,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.963,сагиттальная
+7067,FLAIR,True,False,Опухоли нет,0.0204,Менингиома,0.4605,0,0,0.0,,sequence,FLAIR,0.973,аксиальная
+8820,T2,True,False,Опухоли нет,0.0078,Менингиома,0.3983,0,0,0.0,,sequence,T2,0.889,аксиальная
+9025,T1,False,False,Опухоли нет,0.488,Опухоль гипофиза,0.9739,0,1,0.0,presence_uncertain|review_zones,,T1,0.998,аксиальная
+9061,T2,True,False,Опухоли нет,0.0128,Менингиома,0.3684,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.941,аксиальная
+9102,T2,True,False,Опухоли нет,0.0145,Опухоль гипофиза,0.3751,0,0,0.0,,sequence,T2,0.994,аксиальная
+6090,FLAIR,True,False,Опухоли нет,0.0081,Опухоль гипофиза,0.6023,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.813,аксиальная
+6092,FLAIR,True,False,Опухоли нет,0.101,Менингиома,0.9273,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.983,аксиальная
+6093,другое/не ясно,False,False,Опухоли нет,0.0115,Опухоль гипофиза,0.481,0,0,0.0,low_resolution,full_frame|low_resolution|sequence,FLAIR,0.792,аксиальная
+6139,FLAIR,True,False,Опухоли нет,0.0439,Глиома,0.4621,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.923,аксиальная
+6140,FLAIR,True,False,Опухоли нет,0.0082,Менингиома,0.3801,0,0,0.0,low_resolution,full_frame|low_resolution|sequence,FLAIR,0.988,аксиальная
+6144,T2,True,False,Опухоли нет,0.0204,Глиома,0.4678,0,0,0.0,low_resolution,low_resolution|sequence,T2,0.994,аксиальная
+6174,КТ,True,False,Опухоли нет,0.0108,Опухоль гипофиза,0.365,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.989,аксиальная
+6209,КТ,True,False,Опухоли нет,0.0133,Глиома,0.3625,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.916,аксиальная
+6212,КТ,True,False,Опухоли нет,0.0118,Глиома,0.3893,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.977,аксиальная
+6257,FLAIR,True,False,Опухоли нет,0.0219,Глиома,0.7739,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.826,аксиальная
+6259,другое/не ясно,False,False,Опухоли нет,0.0117,Глиома,0.3752,0,0,0.0,low_resolution,full_frame|low_resolution,FLAIR,0.527,аксиальная
+6270,КТ,True,False,Опухоли нет,0.0167,Глиома,0.4863,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.975,аксиальная
+6303,FLAIR,True,False,Опухоли нет,0.0116,Опухоль гипофиза,0.3609,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.969,аксиальная
+6304,FLAIR,True,False,Опухоли нет,0.0125,Глиома,0.365,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.997,аксиальная
+6305,другое/не ясно,True,False,Опухоли нет,0.0078,Глиома,0.4221,0,0,0.0,low_resolution,full_frame|low_resolution|sequence,FLAIR,0.959,аксиальная
+6385,T1,False,False,Опухоли нет,0.0113,Менингиома,0.4641,0,0,0.0,low_resolution,low_resolution,T1,0.984,аксиальная
+6387,T1,False,False,Опухоли нет,0.3048,Глиома,0.5331,0,1,0.0,presence_uncertain|review_zones|low_resolution,low_resolution,T1,0.997,аксиальная
+6388,FLAIR,True,False,Опухоли нет,0.0164,Глиома,0.5942,0,0,0.0,low_resolution,full_frame|low_resolution|ood|sequence,FLAIR,0.917,аксиальная
+6392,FLAIR,True,False,Опухоли нет,0.011,Менингиома,0.3853,0,0,0.0,low_resolution,full_frame|low_resolution|sequence,FLAIR,0.998,аксиальная
+6440,FLAIR,True,False,Опухоли нет,0.0125,Менингиома,0.3606,0,0,0.0,low_resolution,low_resolution|sequence,FLAIR,0.86,аксиальная
+6441,другое/не ясно,False,False,Опухоли нет,0.0109,Менингиома,0.3594,0,0,0.0,low_resolution,full_frame|low_resolution,FLAIR,0.563,аксиальная
+6453,КТ,True,False,Опухоли нет,0.0099,Менингиома,0.5281,0,0,0.0,low_resolution,low_resolution|ct,КТ,0.989,аксиальная
+6535,T1,False,False,Опухоли нет,0.0472,Опухоль гипофиза,0.725,0,0,0.0,low_resolution,low_resolution,T1,0.994,корональная

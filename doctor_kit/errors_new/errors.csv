@@ -1,0 +1,15 @@
+file,key,group,label,ok,refused,tumor,pred,p_tumor,top,top_p,n_find,n_zones,band_ratio,flags,checks,seq,seq_p,plane
+err_01.png,Обучающая выборка/Глиома/image(54).jpg,986,Глиома,False,False,True,Менингиома,0.9898,Менингиома,0.9931,1,0,0.3,low_resolution,low_resolution,T1,0.987,сагиттальная
+err_02.png,Обучающая выборка/Менингиома/m3 (134).jpg,1387,Менингиома,False,False,True,Глиома,0.9939,Глиома,0.993,0,1,0.0,classifier_tumor_no_contour|review_zones,,T1,0.999,аксиальная
+err_03.png,Обучающая выборка/Глиома/image(27).jpg,981,Глиома,False,False,True,Менингиома,0.9605,Менингиома,0.981,0,1,0.0,classifier_tumor_no_contour|review_zones,,T1,0.867,аксиальная
+err_04.png,Тестова выборка/Гипофиз/image(1).jpg,2620,Опухоль гипофиза,False,False,True,Менингиома,0.9955,Менингиома,0.9661,1,0,0.54,,,T1,1.0,сагиттальная
+err_05.png,Обучающая выборка/Глиома/image(58).jpg,987,Глиома,False,False,True,Менингиома,0.9708,Менингиома,0.9101,1,0,0.29,low_resolution,full_frame|low_resolution,T1,0.997,корональная
+err_06.png,Обучающая выборка/Глиома/image(22).jpg,978,Глиома,False,False,True,Менингиома,0.9941,Менингиома,0.8938,0,3,0.0,classifier_tumor_no_contour|review_zones,,T1,0.999,аксиальная
+err_07.png,Обучающая выборка/Глиома/image(19).jpg,976,Глиома,False,False,False,Опухоли нет,0.2879,Менингиома,0.866,0,1,0.0,review_zones|low_resolution,low_resolution,T1,0.952,сагиттальная
+err_08.png,Обучающая выборка/Менингиома/m3 (133).jpg,1386,Менингиома,False,True,False,Опухоли нет,0.2515,Менингиома,0.8078,0,0,0.0,,sequence,FLAIR,0.959,аксиальная
+err_09.png,Обучающая выборка/Глиома/image(29).jpg,983,Глиома,False,False,True,Менингиома,0.9721,Менингиома,0.736,1,0,0.18,,full_frame,T1,0.991,аксиальная
+err_10.png,Тестова выборка/Менингиома/1483.jpg,1603,Менингиома,False,True,False,Опухоли нет,0.3265,Глиома,0.6237,0,0,0.0,presence_uncertain|review_zones,sequence,T2,0.959,аксиальная
+err_11.png,Обучающая выборка/Опухоли нет/Tr-no_0249.jpg,2229,Опухоли нет,False,False,True,Глиома,0.6969,Глиома,0.5883,1,2,0.79,type_uncertain|presence_uncertain|boundary_uncertain|review_zones,,T1,1.0,аксиальная
+err_12.png,Обучающая выборка/Глиома/image(15).jpg,975,Глиома,False,False,False,Опухоли нет,0.0272,Менингиома,0.5243,0,0,0.0,,,FLAIR,0.538,корональная
+err_13.png,Обучающая выборка/Менингиома/m3 (146).jpg,1704,Менингиома,False,False,True,Опухоль гипофиза,0.9962,Опухоль гипофиза,0.5042,1,2,0.27,type_uncertain|review_zones,,T1,1.0,аксиальная
+err_14.png,Обучающая выборка/Глиома/image(23).jpg,979,Глиома,False,False,True,Менингиома,0.5694,Менингиома,0.4354,0,0,0.0,classifier_tumor_no_contour|type_uncertain|presence_uncertain|low_resolution,low_resolution,T1,0.986,аксиальная
