@@ -1,0 +1,40 @@
+{
+ "candidates": {
+  "seg_b1": {
+   "val_dice": 0.8226213732375656,
+   "minutes": 27.4
+  },
+  "seg_b2": {
+   "val_dice": 0.8182925989141315,
+   "minutes": 27.4
+  },
+  "cls_b1": {
+   "val_macro_f1": 0.9551973491172592,
+   "minutes": 9.1
+  },
+  "cls_b2": {
+   "val_macro_f1": 0.9470285773458363,
+   "minutes": 9.0
+  }
+ },
+ "brisc_dice": {
+  "brisc_test": {
+   "n_tumor": 728,
+   "current": 0.7842462037174025,
+   "current_plus_candidates": 0.7935095697953968,
+   "candidates_only": 0.8127314750053043
+  },
+  "brisc_val": {
+   "n_tumor": 631,
+   "current": 0.7968101139380724,
+   "current_plus_candidates": 0.8032909351812437,
+   "candidates_only": 0.8136194362864487
+  },
+  "brisc_external": {
+   "n_tumor": 6,
+   "current": 0.828850293445722,
+   "current_plus_candidates": 0.83068137465804,
+   "candidates_only": 0.8352170095413015
+  }
+ }
+}
