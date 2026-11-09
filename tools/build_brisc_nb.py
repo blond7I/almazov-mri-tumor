@@ -35,7 +35,7 @@ def log(*a):
     s = ' '.join(str(x) for x in a); print(s, flush=True); LOG.write(time.strftime('%H:%M:%S ') + s + '\n'); LOG.flush()
 log('device', DEV, 'BRISC', BR)
 
-def push(files, msg):
+def _push(files, msg):
     from kaggle_secrets import UserSecretsClient
     tok = UserSecretsClient().get_secret('GITHUB_TOKEN').strip()
     R2 = '/tmp/push_repo'; shutil.rmtree(R2, ignore_errors=True)
@@ -54,6 +54,15 @@ def push(files, msg):
     git('add', '-A'); git('commit', '-q', '-m', msg + '\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
                                          'Claude-Session: https://claude.ai/code/session_01KWjYFaDqWdYY8y4uMMdgwF')
     git('push', f'https://x-access-token:{tok}@github.com/blond7I/almazov-mri-tumor.git', 'HEAD:main')
+
+def push(files, msg):
+    # GitHub — удобство, не условие: при любой ошибке результаты остаются в Output этого ноутбука
+    for k in range(3):
+        try:
+            _push(files, msg); return True
+        except Exception as e:
+            print('Не удалось отправить в GitHub (попытка', k + 1, '):', type(e).__name__, str(e)[:200]); time.sleep(20)
+    print('Результаты остаются в Output (вкладка Output ноутбука)'); return False
 """)
 code(r"""
 # данные — тем же путём, что в ноутбуке обучения: архив организаторов (box) + Figshare

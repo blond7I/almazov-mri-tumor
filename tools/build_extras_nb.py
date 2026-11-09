@@ -23,7 +23,7 @@ from almazov import pipeline, extras, data
 INPUT = os.environ.get('ALMAZOV_INPUT', '/kaggle/input')
 src = sorted(glob.glob(INPUT + '/**/stage2_results.zip', recursive=True))
 assert src, 'Подключите выход ноутбука обучения (Add Input -> Your Work)'
-RES, OUT = '/tmp/res', '/tmp/extras_out'
+RES, OUT = '/tmp/res', '/kaggle/working/extras_out'
 shutil.rmtree(RES, ignore_errors=True); os.makedirs(RES)
 with zipfile.ZipFile(src[0]) as z:
     for n in ['index.npz', 'meta.csv', 'extra_meta.csv', 'images_jpg.zip']:
@@ -35,7 +35,7 @@ LOG = open(OUT + '/extras_log.txt', 'w', encoding='utf-8')
 def log(*a):
     s = ' '.join(str(x) for x in a); print(s, flush=True); LOG.write(time.strftime('%H:%M:%S ') + s + '\n'); LOG.flush()
 
-def push(files, msg):
+def _push(files, msg):
     # files: {путь в репозитории: локальный путь (файл или папка)}; свежий клон -> копия -> commit -> push
     from kaggle_secrets import UserSecretsClient
     tok = UserSecretsClient().get_secret('GITHUB_TOKEN').strip()
@@ -56,6 +56,15 @@ def push(files, msg):
                                          'Claude-Session: https://claude.ai/code/session_01KWjYFaDqWdYY8y4uMMdgwF')
     git('push', f'https://x-access-token:{tok}@github.com/blond7I/almazov-mri-tumor.git', 'HEAD:main')
     print('Отправлено в GitHub:', list(files))
+
+def push(files, msg):
+    # GitHub — удобство, не условие: при любой ошибке результаты остаются в Output этого ноутбука
+    for k in range(3):
+        try:
+            _push(files, msg); return True
+        except Exception as e:
+            print('Не удалось отправить в GitHub (попытка', k + 1, '):', type(e).__name__, str(e)[:200]); time.sleep(20)
+    print('Результаты остаются в Output (вкладка Output ноутбука)'); return False
 """)
 code(r"""
 # данные: исходные снимки организаторов (архив с box) + исходные срезы Figshare 512x512 (.mat)
