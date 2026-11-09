@@ -65,6 +65,9 @@ def build_ui(M, examples=()):
         res = pipeline.analyze(M, img, source_name='DICOM' if dcm is not None else 'загруженный снимок')
         st = dict(res=res, mask=res['arrays']['mask'].copy(), findings=copy.deepcopy(res['findings']),
                   zones=copy.deepcopy(res['review_zones']), log=[], started=_dt.datetime.now(), edited=False, blind=bool(blind))
+        if res.get('refused'):      # отказ: ни контура, ни полосы на снимке
+            st['mask'] = np.zeros_like(st['mask'])
+            st['res'] = dict(res, arrays=dict(res['arrays'], band=np.zeros_like(res['arrays']['band'])))
         if blind:   # проверка врачом: «обвести с нуля» без подсказок ИИ (для сравнения времени)
             st['mask'] = np.zeros_like(st['mask']); st['findings'] = []; st['zones'] = []
             st['res'] = dict(res, arrays=dict(res['arrays'], band=np.zeros_like(res['arrays']['band'])))
@@ -74,7 +77,9 @@ def build_ui(M, examples=()):
                     'Обведите опухоль кистью (красная), затем «Сохранить».', '')
         txt = report.build(res, st['findings'], st['zones'], meta_of(seq, plane, study, None))['text']
         fc, zc = choices(st)
-        return (st, render(st, layers), {c: res['probs'][c] for c in CLASSES}, txt, fc, zc,
+        # при отказе вероятности классов не показываем: «Опухоли нет 99%» рядом с отказом читалось бы как ответ
+        probs = 'Анализ не выполнен' if res.get('refused') else {c: res['probs'][c] for c in CLASSES}
+        return (st, render(st, layers), probs, txt, fc, zc,
                 gr.update(value=res['calib']['contour_thr']), status(st), '')
 
     def log(st, action, **kw):
