@@ -34,6 +34,10 @@ def read(path):
         modality=str(getattr(ds, 'Modality', '')),
         series=str(getattr(ds, 'SeriesDescription', ''))[:64],
         sequence_hint=sequence_hint(ds),
+        position=[float(v) for v in ds.ImagePositionPatient] if getattr(ds, 'ImagePositionPatient', None) is not None else None,
+        instance=int(ds.InstanceNumber) if str(getattr(ds, 'InstanceNumber', '')).strip() else None,
+        slice_thickness=float(ds.SliceThickness) if str(getattr(ds, 'SliceThickness', '')).strip() else None,
+        spacing_between=float(ds.SpacingBetweenSlices) if str(getattr(ds, 'SpacingBetweenSlices', '')).strip() else None,
         phi_present=[t for t in PHI_TAGS if str(getattr(ds, t, '')).strip()],
     )
     return img, info

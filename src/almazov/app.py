@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from .common import CLASSES
-from . import pipeline, report, export
+from . import pipeline, report, export, series
 
 SEQ = ['не указан', 'T1 с контрастом', 'T1 без контраста', 'T2', 'FLAIR', 'другой']
 PLANE = ['не указана', 'аксиальная', 'сагиттальная', 'корональная']
@@ -188,7 +188,8 @@ def build_ui(M, examples=()):
                     'Исследовательский прототип, не медицинское изделие. **Решение принимает врач.** '
                     'Красное — контур, жёлтое — неуверенная граница (опухоль может доходить до внешнего края), голубые рамки «?» — зоны дополнительного просмотра.')
         st = gr.State(None)
-        with gr.Row():
+        with gr.Tab('Срез'):
+          with gr.Row():
             with gr.Column(scale=5):
                 with gr.Row():
                     img = gr.Image(type='numpy', label='Срез МРТ (JPG/PNG)', height=260, scale=3)
@@ -225,8 +226,37 @@ def build_ui(M, examples=()):
                 warn = gr.Markdown()
                 bsave = gr.Button('Сохранить (PDF + журнал + маска)', variant='primary')
                 fout = gr.File(label='Архив заключения')
-        if examples:
+          if examples:
             gr.Examples(list(examples), inputs=img, label='Примеры (тестовая часть, модель их не видела)')
+        with gr.Tab('Исследование (серия DICOM)'):
+            gr.Markdown('Загрузите **все файлы серии** (.dcm) или zip-архив серии. Система пройдёт по срезам быстрыми моделями, '
+                        'покажет, на каких срезах есть находка, оценит объём и построит проект заключения по ключевому срезу полным ансамблем.')
+            sfiles = gr.File(file_count='multiple', file_types=['.dcm', '.dicom', '.zip'], type='filepath', label='Файлы серии DICOM или zip-архив')
+            sbtn = gr.Button('Анализ серии', variant='primary')
+            with gr.Row():
+                with gr.Column(scale=5):
+                    scurve = gr.Image(label='По срезам: вероятность опухоли и площадь контура', interactive=False)
+                    sgal = gr.Gallery(label='Срезы с находкой (первым — ключевой, полный ансамбль)', columns=3, height=420)
+                with gr.Column(scale=5):
+                    ssum = gr.Textbox(label='Сводка по исследованию', lines=7)
+                    stext = gr.Textbox(label='Проект заключения по ключевому срезу + сводка по серии (можно править и копировать)', lines=22)
+
+        def on_series(files, progress=gr.Progress()):
+            if not files:
+                raise gr.Error('Загрузите файлы серии DICOM или zip-архив серии.')
+            S = series.analyze(M, files if isinstance(files, list) else [files], progress=progress)
+            if S is None:
+                raise gr.Error('Среди загруженных файлов не нашлось ни одного DICOM.')
+            k = S['summary']['key_slice']
+            gal = [(pipeline.overlay(S['key_result']), f'Срез {k} — ключевой (полный ансамбль)')]
+            gal += [(ov, f'Срез {n}') for n, ov in S['overlays'].items() if n != k]
+            summ = series.summary_text(S)
+            txt = report.build(S['key_result'])['text'].replace('Объём анализа: один двумерный срез, не исследование целиком.',
+                                                               f'Объём анализа: серия DICOM ({S["summary"]["slices"]} срезов); описание — по ключевому срезу {k}, сводка по серии — ниже.')
+            txt += '\n\nИССЛЕДОВАНИЕ ЦЕЛИКОМ (СЕРИЯ)\n' + summ
+            return series.curve_image(S), gal, summ, txt
+
+        sbtn.click(on_series, [sfiles], [scurve, sgal, ssum, stext])
         btn.click(on_analyze, [img, seq, plane, study, layers, blind, dcm], [st, out, probs, text, fsel, zsel, thr, stat, warn]).then(
             lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
         bbr.click(on_brush, [ed, st, layers], [st, out, fsel, zsel, stat, ed])
