@@ -308,8 +308,9 @@ def attention_summary(res, mask=None):
     m = (a['mask'] if mask is None else mask) | a['band']
     tot = float(cam.sum()) + 1e-8
     y, x = np.unravel_index(int(np.argmax(cam)), cam.shape)
+    near = cv2.dilate(m.astype(np.uint8), np.ones((33, 33), np.uint8))     # допуск 16 пикс. = половина клетки карты 8×8
     return dict(cls=a.get('cam_class'), share_in_contour=round(float(cam[m > 0].sum()) / tot, 3) if m.any() else None,
-                peak_in_contour=bool(m[y, x]) if m.any() else None,
+                peak_in_contour=bool(near[y, x]) if m.any() else None,
                 peak_half='центр' if abs(x - 128) < 15 else ('левая' if x < 128 else 'правая'))
 
 
