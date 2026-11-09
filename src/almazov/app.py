@@ -18,7 +18,7 @@ from . import pipeline, report, export, series
 
 SEQ = ['не указан', 'T1 с контрастом', 'T1 без контраста', 'T2', 'FLAIR', 'другой']
 PLANE = ['не указана', 'аксиальная', 'сагиттальная', 'корональная']
-LAYERS = ['Полоса неуверенной границы', 'Зоны дополнительного просмотра']
+LAYERS = ['Полоса неуверенной границы', 'Зоны дополнительного просмотра', 'Куда смотрел классификатор (тепловая карта)']
 FLAG_TEXT = {
     'classifier_tumor_no_contour': 'Классификатор видит опухоль, контура нет — просмотрите весь срез',
     'contour_without_classifier': 'Есть контур, но классификатор опухоли не видит',
@@ -40,7 +40,26 @@ def build_ui(M, examples=()):
 
     def render(st, layers):
         r = dict(st['res'], findings=st['findings'], review_zones=st['zones'])
-        return pipeline.overlay(r, show_band=LAYERS[0] in layers, show_review=LAYERS[1] in layers, mask=st['mask'])
+        cam = LAYERS[2] in layers and not r.get('refused') and not st.get('blind')
+        if cam:
+            pipeline.attention(M, st['res'])      # считается один раз на снимок, по требованию
+        return pipeline.overlay(r, show_band=LAYERS[0] in layers, show_review=LAYERS[1] in layers, mask=st['mask'], show_cam=cam)
+
+    def cam_note(st):
+        a = pipeline.attention_summary(st['res'], st['mask'])
+        if not a:
+            return ''
+        t = f'🔥 **Тепловая карта** — для ответа «{a["cls"]}»: где сильнее всего «смотрел» классификатор (грубая сетка 8×8, ориентир). '
+        if a['share_in_contour'] is not None:
+            t += (f'Внутри контура с полосой — {a["share_in_contour"]:.0%} «внимания»; максимум — '
+                  + ('внутри контура.' if a['peak_in_contour'] else f'**вне контура** ({a["peak_half"]} половина): посмотрите это место.'))
+        else:
+            t += f'Контура нет; максимум внимания — {a["peak_half"]} половина.'
+        o = st['res']['arrays'].get('occlusion')
+        if o:
+            from . import explain
+            t += '\n\n🧪 ' + explain.occlusion_text(o)
+        return t
 
     def choices(st):
         f = [f'№{x["id"]}: {report._where(x["half"])}, {x["area_pct_head"]}% площади головы' for x in st['findings']]
@@ -55,6 +74,9 @@ def build_ui(M, examples=()):
         s = f'**Модели:** {r["model_version"]}.  **Находок:** {len(st["findings"])}, зон просмотра: {len(st["zones"])}.'
         if fl:
             s += '\n\n⚠️ ' + ' · '.join(fl)
+        cn = cam_note(st)
+        if cn:
+            s += '\n\n' + cn
         return s + (f'\n\n{note}' if note else '')
 
     def on_analyze(img, seq, plane, study, layers, blind=False, dcm=None):
@@ -157,7 +179,7 @@ def build_ui(M, examples=()):
         return (*out, editor_value(st, layers))
 
     def on_layers(layers, st):
-        return render(st, layers) if st else None
+        return (render(st, layers), status(st)) if st else (None, '')
 
     def on_rebuild(st, seq, plane, study):
         if not st:
@@ -186,7 +208,7 @@ def build_ui(M, examples=()):
     with gr.Blocks(title='МРТ: проект заключения') as ui:
         gr.Markdown('## МРТ головного мозга: контур, сомнения и проект заключения\n'
                     'Исследовательский прототип, не медицинское изделие. **Решение принимает врач.** '
-                    'Красное — контур, жёлтое — неуверенная граница (опухоль может доходить до внешнего края), голубые рамки «?» — зоны дополнительного просмотра.')
+                    'Красное — контур, жёлтое — неуверенная граница (опухоль может доходить до внешнего края), голубые рамки «?» — зоны дополнительного просмотра; слой «Куда смотрел классификатор» — тепловая карта внимания (включается в «Слоях»).')
         st = gr.State(None)
         with gr.Tab('Срез'):
           with gr.Row():
@@ -202,7 +224,7 @@ def build_ui(M, examples=()):
                     btn = gr.Button('Анализ', variant='primary', scale=3)
                     blind = gr.Checkbox(label='Обвести с нуля (без ИИ)', value=False, scale=2)
                 out = gr.Image(label='Результат', height=520, interactive=False)
-                layers = gr.CheckboxGroup(LAYERS, value=LAYERS, label='Слои')
+                layers = gr.CheckboxGroup(LAYERS, value=LAYERS[:2], label='Слои')
                 thr = gr.Slider(0.2, 0.8, value=0.5, step=0.05, label='Порог контура (ниже — шире контур)')
                 with gr.Row():
                     fsel = gr.CheckboxGroup([], label='Находки — отметьте лишние')
@@ -266,7 +288,7 @@ def build_ui(M, examples=()):
             lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
         bpro.click(on_promote, [zsel, st, layers], [st, out, fsel, zsel, stat]).then(
             lambda st_, ly: editor_value(st_, ly) if st_ else None, [st, layers], ed)
-        layers.change(on_layers, [layers, st], out)
+        layers.change(on_layers, [layers, st], [out, stat])
         brb.click(on_rebuild, [st, seq, plane, study], [text, warn])
         bch.click(on_check, [text, st], warn)
         bsave.click(on_save, [text, st, seq, plane, study, layers], [fout, warn])

@@ -91,8 +91,11 @@ def cls_features(net, imgs, dev, bs=64):
     return torch.cat(out).numpy() if out else np.zeros((0, 2048), np.float16)
 
 
-def cls_gradcam(net, imgs, dev, bs=32):
-    """Grad-CAM последнего блока ResNet для предсказанного класса: (n, 8, 8) float16 в [0, 1] и класс."""
+def cls_gradcam(net, imgs, dev, bs=32, target=None):
+    """Grad-CAM последнего блока ResNet: (n, 8, 8) float16 в [0, 1] и класс.
+
+    target — класс (int или массив на каждый снимок), для которого строится карта; по умолчанию — предсказанный этой моделью.
+    """
     net.eval()
     cams, preds = [], []
     for s in range(0, len(imgs), bs):
@@ -100,7 +103,11 @@ def cls_gradcam(net, imgs, dev, bs=32):
         with torch.enable_grad():
             f = net.forward_features(x).float().detach().requires_grad_(True)
             logits = net.forward_head(f)
-            c = logits.argmax(1)
+            if target is None:
+                c = logits.argmax(1)
+            else:
+                t = np.broadcast_to(np.asarray(target), (len(imgs),))[s:s + bs]
+                c = torch.as_tensor(np.ascontiguousarray(t), dtype=torch.long, device=logits.device)
             g, = torch.autograd.grad(logits.gather(1, c[:, None]).sum(), f)
         w = g.mean((2, 3), keepdim=True)
         cam = torch.relu((w * f).sum(1))

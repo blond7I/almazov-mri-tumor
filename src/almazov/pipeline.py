@@ -280,7 +280,40 @@ def analyze(M, img, pixel_spacing_mm=None, source_name='', device=None):
     )
 
 
-def overlay(res, show_band=True, show_review=True, mask=None):
+def attention(M, res, device=None):
+    """«Куда смотрел классификатор»: Grad-CAM ансамбля для итогового класса (среднее с отражением), 256×256 в [0, 1],
+    и проверка стиранием найденной области (explain.occlusion). Считается по требованию, кэшируется в res['arrays'].
+    Ориентир для врача, а не доказательство; проверка на тесте — results/stage2/explain_check.json.
+    """
+    from . import explain
+    a = res['arrays']
+    if a.get('cam') is not None:
+        return a['cam']
+    dev = torch.device(device) if device else next(M.cls[0][1].parameters()).device
+    P0 = np.array([res['probs'][c] for c in CLASSES])
+    target = int(np.argmax(P0))
+    a['cam'] = explain.gradcam(M, a['x256'][None], dev, target, head=a['head'][None])[0]
+    a['cam_class'] = CLASSES[target]
+    region = (a['mask'] | a['band']).astype(np.uint8)
+    a['occlusion'] = explain.occlusion(M, a['x256'], region, dev, P0=P0) if region.any() and res.get('tumor') else None
+    return a['cam']
+
+
+def attention_summary(res, mask=None):
+    """Согласие карты внимания с контуром: доля «тепла» внутри контура (с полосой) и где максимум."""
+    a = res['arrays']
+    cam = a.get('cam')
+    if cam is None:
+        return None
+    m = (a['mask'] if mask is None else mask) | a['band']
+    tot = float(cam.sum()) + 1e-8
+    y, x = np.unravel_index(int(np.argmax(cam)), cam.shape)
+    return dict(cls=a.get('cam_class'), share_in_contour=round(float(cam[m > 0].sum()) / tot, 3) if m.any() else None,
+                peak_in_contour=bool(m[y, x]) if m.any() else None,
+                peak_half='центр' if abs(x - 128) < 15 else ('левая' if x < 128 else 'правая'))
+
+
+def overlay(res, show_band=True, show_review=True, mask=None, show_cam=False):
     """Картинка для врача: красная заливка — контур, жёлтая полоса — неуверенная граница, голубые рамки — зоны просмотра."""
     a = res['arrays']
     m = a['mask'] if mask is None else mask
@@ -288,6 +321,11 @@ def overlay(res, show_band=True, show_review=True, mask=None):
     up = 3
     rgb = cv2.resize(rgb, None, fx=up, fy=up, interpolation=cv2.INTER_CUBIC)
     big = lambda z: cv2.resize(z.astype(np.uint8), None, fx=up, fy=up, interpolation=cv2.INTER_NEAREST)
+    if show_cam and a.get('cam') is not None:      # тепловая карта: прозрачность растёт с вниманием, слабое не закрашиваем
+        c = cv2.resize(a['cam'], (rgb.shape[1], rgb.shape[0]), interpolation=cv2.INTER_LINEAR)
+        heat = cv2.applyColorMap((c * 255).astype(np.uint8), cv2.COLORMAP_INFERNO)[..., ::-1]
+        al = (np.clip((c - 0.25) / 0.75, 0, 1) * 0.55)[..., None]
+        rgb = (rgb * (1 - al) + heat * al).astype(np.uint8)
     if show_band and a['band'].any():
         ov = rgb.copy(); ov[big(a['band']) > 0] = (255, 210, 0)
         rgb = cv2.addWeighted(rgb, .7, ov, .3, 0)
