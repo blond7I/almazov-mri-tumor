@@ -54,7 +54,7 @@ def _push(files, msg):
         print((r.stdout + r.stderr).replace(tok, '***')[-800:])
         if r.returncode: raise RuntimeError('git ' + a[0] + ': ошибка')
     git('config', 'user.name', 'blond7I'); git('config', 'user.email', 'blond7I@users.noreply.github.com')
-    git('add', '-A'); git('commit', '-q', '-m', msg + '\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
+    git('add', '-A'); git('commit', '-q', '-m', msg + '\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n'
                                          'Claude-Session: https://claude.ai/code/session_01KWjYFaDqWdYY8y4uMMdgwF')
     git('push', f'https://x-access-token:{tok}@github.com/blond7I/almazov-mri-tumor.git', 'HEAD:main')
     print('Отправлено в GitHub:', list(files))
@@ -67,6 +67,9 @@ def push(files, msg):
         except Exception as e:
             print('Не удалось отправить в GitHub (попытка', k + 1, '):', type(e).__name__, str(e)[:200]); time.sleep(20)
     print('Результаты остаются в Output (вкладка Output ноутбука)'); return False
+
+M = pipeline.load_models(REPO, cache_dir='/tmp/almazov_cache', device=DEV)
+log('Модели:', M.version)
 """)
 
 code(r"""
