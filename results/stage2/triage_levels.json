@@ -1,71 +1,36 @@
 {
  "rule": "found = classifier tumor (P>=0.5) AND contour; review = exactly one of them; none = neither; refused images excluded",
- "note": "правило выбрано после просмотра BRISC (9.11); тест организаторов — здоровые срезы, на которых правило не подбиралось",
- "organizer_test_normals": {
-  "n": 29,
-  "found": 0,
-  "found_share": 0.0,
-  "found_ci": [
-   0.0,
-   0.117
-  ],
-  "review": 4,
-  "review_share": 0.1379,
-  "review_ci": [
-   0.055,
-   0.3056
-  ],
-  "none": 25,
-  "none_share": 0.8621,
-  "none_ci": [
-   0.6944,
-   0.945
-  ]
- },
- "organizer_test_normals_T1": {
-  "n": 21,
-  "found": 0,
-  "found_share": 0.0,
-  "found_ci": [
-   0.0,
-   0.1546
-  ],
-  "review": 4,
-  "review_share": 0.1905,
-  "review_ci": [
-   0.0767,
-   0.4
-  ],
-  "none": 17,
-  "none_share": 0.8095,
-  "none_ci": [
-   0.6,
-   0.9233
-  ]
- },
+ "note": "здоровые BRISC — только отложенная половина (не участвовала в обучении ни одной модели); правило выбрано после BRISC (9.11)",
+ "holdout_only": true,
  "brisc_external_normals": {
-  "n": 960,
-  "found": 8,
-  "found_share": 0.0083,
+  "n_all": 629,
+  "refused": 89,
+  "n": 540,
+  "classifier_said_tumor": 7,
+  "found": 0,
+  "found_share": 0.0,
   "found_ci": [
-   0.0042,
-   0.0164
+   0.0,
+   0.0071
   ],
-  "review": 79,
-  "review_share": 0.0823,
+  "review": 11,
+  "review_share": 0.0204,
   "review_ci": [
-   0.0665,
-   0.1014
+   0.0114,
+   0.0361
   ],
-  "none": 873,
-  "none_share": 0.9094,
+  "none": 529,
+  "none_share": 0.9796,
   "none_ci": [
-   0.8895,
-   0.9259
+   0.9639,
+   0.9886
   ]
  },
  "brisc_matched_our_test_tumors": {
+  "n_all": 728,
+  "refused": 5,
   "n": 723,
+  "classifier_said_tumor": 723,
   "found": 712,
   "found_share": 0.9848,
   "found_ci": [
@@ -87,7 +52,10 @@
  },
  "brisc_matched_our_test_tumors_by_class": {
   "Глиома": {
+   "n_all": 198,
+   "refused": 0,
    "n": 198,
+   "classifier_said_tumor": 198,
    "found": 195,
    "found_share": 0.9848,
    "found_ci": [
@@ -108,7 +76,10 @@
    ]
   },
   "Менингиома": {
+   "n_all": 264,
+   "refused": 5,
    "n": 259,
+   "classifier_said_tumor": 259,
    "found": 252,
    "found_share": 0.973,
    "found_ci": [
@@ -129,7 +100,10 @@
    ]
   },
   "Опухоль гипофиза": {
+   "n_all": 266,
+   "refused": 0,
    "n": 266,
+   "classifier_said_tumor": 266,
    "found": 265,
    "found_share": 0.9962,
    "found_ci": [
@@ -150,14 +124,224 @@
    ]
   }
  },
- "classifier_only_false_alarm": {
-  "organizer_test_normals": [
-   3,
-   29
+ "organizer_test_normals": {
+  "n_all": 89,
+  "refused": 60,
+  "n": 29,
+  "classifier_said_tumor": 3,
+  "found": 0,
+  "found_share": 0.0,
+  "found_ci": [
+   0.0,
+   0.117
   ],
-  "brisc_external_normals": [
-   81,
-   960
+  "review": 4,
+  "review_share": 0.1379,
+  "review_ci": [
+   0.055,
+   0.3056
+  ],
+  "none": 25,
+  "none_share": 0.8621,
+  "none_ci": [
+   0.6944,
+   0.945
   ]
+ },
+ "organizer_test_normals_T1": {
+  "n_all": 21,
+  "refused": 0,
+  "n": 21,
+  "classifier_said_tumor": 3,
+  "found": 0,
+  "found_share": 0.0,
+  "found_ci": [
+   0.0,
+   0.1546
+  ],
+  "review": 4,
+  "review_share": 0.1905,
+  "review_ci": [
+   0.0767,
+   0.4
+  ],
+  "none": 17,
+  "none_share": 0.8095,
+  "none_ci": [
+   0.6,
+   0.9233
+  ]
+ },
+ "before_v2": {
+  "brisc_external_normals": {
+   "n_all": 629,
+   "refused": 89,
+   "n": 540,
+   "classifier_said_tumor": 41,
+   "found": 2,
+   "found_share": 0.0037,
+   "found_ci": [
+    0.001,
+    0.0134
+   ],
+   "review": 41,
+   "review_share": 0.0759,
+   "review_ci": [
+    0.0565,
+    0.1014
+   ],
+   "none": 497,
+   "none_share": 0.9204,
+   "none_ci": [
+    0.8945,
+    0.9403
+   ]
+  },
+  "brisc_matched_our_test_tumors": {
+   "n_all": 728,
+   "refused": 5,
+   "n": 723,
+   "classifier_said_tumor": 723,
+   "found": 712,
+   "found_share": 0.9848,
+   "found_ci": [
+    0.973,
+    0.9915
+   ],
+   "review": 11,
+   "review_share": 0.0152,
+   "review_ci": [
+    0.0085,
+    0.027
+   ],
+   "none": 0,
+   "none_share": 0.0,
+   "none_ci": [
+    0.0,
+    0.0053
+   ]
+  },
+  "brisc_matched_our_test_tumors_by_class": {
+   "Глиома": {
+    "n_all": 198,
+    "refused": 0,
+    "n": 198,
+    "classifier_said_tumor": 198,
+    "found": 195,
+    "found_share": 0.9848,
+    "found_ci": [
+     0.9564,
+     0.9948
+    ],
+    "review": 3,
+    "review_share": 0.0152,
+    "review_ci": [
+     0.0052,
+     0.0436
+    ],
+    "none": 0,
+    "none_share": 0.0,
+    "none_ci": [
+     0.0,
+     0.019
+    ]
+   },
+   "Менингиома": {
+    "n_all": 264,
+    "refused": 5,
+    "n": 259,
+    "classifier_said_tumor": 259,
+    "found": 252,
+    "found_share": 0.973,
+    "found_ci": [
+     0.9453,
+     0.9868
+    ],
+    "review": 7,
+    "review_share": 0.027,
+    "review_ci": [
+     0.0132,
+     0.0547
+    ],
+    "none": 0,
+    "none_share": 0.0,
+    "none_ci": [
+     0.0,
+     0.0146
+    ]
+   },
+   "Опухоль гипофиза": {
+    "n_all": 266,
+    "refused": 0,
+    "n": 266,
+    "classifier_said_tumor": 266,
+    "found": 265,
+    "found_share": 0.9962,
+    "found_ci": [
+     0.979,
+     0.9993
+    ],
+    "review": 1,
+    "review_share": 0.0038,
+    "review_ci": [
+     0.0007,
+     0.021
+    ],
+    "none": 0,
+    "none_share": 0.0,
+    "none_ci": [
+     0.0,
+     0.0142
+    ]
+   }
+  },
+  "organizer_test_normals": {
+   "n_all": 89,
+   "refused": 60,
+   "n": 29,
+   "classifier_said_tumor": 3,
+   "found": 0,
+   "found_share": 0.0,
+   "found_ci": [
+    0.0,
+    0.117
+   ],
+   "review": 4,
+   "review_share": 0.1379,
+   "review_ci": [
+    0.055,
+    0.3056
+   ],
+   "none": 25,
+   "none_share": 0.8621,
+   "none_ci": [
+    0.6944,
+    0.945
+   ]
+  },
+  "organizer_test_normals_T1": {
+   "n_all": 21,
+   "refused": 0,
+   "n": 21,
+   "classifier_said_tumor": 3,
+   "found": 0,
+   "found_share": 0.0,
+   "found_ci": [
+    0.0,
+    0.1546
+   ],
+   "review": 4,
+   "review_share": 0.1905,
+   "review_ci": [
+    0.0767,
+    0.4
+   ],
+   "none": 17,
+   "none_share": 0.8095,
+   "none_ci": [
+    0.6,
+    0.9233
+   ]
+  }
  }
 }
