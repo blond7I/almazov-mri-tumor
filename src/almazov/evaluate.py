@@ -84,8 +84,8 @@ def load(res_dir):
     if (d / 'extra.npz').exists():
         z = np.load(d / 'extra.npz', allow_pickle=True)
         z = {k: z[k] for k in z.files}
-        if more and (d / 'extra_b.npz').exists():
-            zb = np.load(d / 'extra_b.npz', allow_pickle=True)
+        for fb in sorted(d.glob('extra_?.npz')) if more else []:      # extra_b.npz (BRISC), extra_n.npz (здоровые T1)
+            zb = np.load(fb, allow_pickle=True)
             z.update({k: zb[k] for k in zb.files})
         ex = (z, pd.read_csv(d / 'extra_meta.csv', keep_default_na=False))
     return E, S, C, segs, clss, ex
