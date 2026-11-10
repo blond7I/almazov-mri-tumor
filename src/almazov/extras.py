@@ -278,6 +278,20 @@ def doctor_cases(M, mats, s_te, fidx, fM, org_normals, org_tumors, out_dir, seed
 
 
 # ---------------------------------------------------------------- 4. полоса v2 на BraTS (T1 с контрастом)
+def _brats_extra(S, refused):
+    """Сколько чужих срезов система сама пометила (отказ или предупреждение «не похож на обучение») и что говорит правило двух сигналов."""
+    if not len(S):
+        return {}
+    ood = S.checks.str.contains('ood')
+    n_all = len(S) + refused
+    lv = lambda d: {k: int((d.level == k).sum()) for k in ('found', 'review', 'none')}
+    return dict(ood_warned_slices=int(ood.sum()), refused_or_warned_share=round(float((refused + ood.sum()) / n_all), 3),
+                answered_without_any_warning=int((~ood).sum()),
+                levels_on_tumor_free_slices=dict(n=int(S['empty'].sum()), **lv(S[S['empty']])),
+                levels_on_tc_slices=dict(n=int(S.has_tc.sum()), **lv(S[S.has_tc])),
+                levels_on_tumor_free_slices_no_warning=dict(n=int((S['empty'] & ~ood).sum()), **lv(S[S['empty'] & ~ood])))
+
+
 def brats_band(M, root, step=2, alpha=0.10, seed=0, log=print):
     """Тестовые пациенты того же разбиения, что в brats.py (seed 0, 80/10/10). На вход прототипа — срез T1gd как есть
     (240x240, уже без черепа). Эталон для контура — ядро опухоли TC (видимая на T1c часть: некроз + контрастируемая)."""
@@ -316,8 +330,9 @@ def brats_band(M, root, step=2, alpha=0.10, seed=0, log=print):
                     n_contour += 1
                     outer = (m | b).astype(bool)
                     risks.append(float((tc256.astype(bool) & ~outer).sum() / tc256.sum()))
-            sl.append(dict(pid=Path(p).name, z=int(z), has_tc=bool(has_tc), contour=bool(m.any()), refused=False,
-                           p_tumor=res['p_tumor'], seq=res['auto_sequence'], checks='|'.join(c['code'] for c in res['checks'])))
+            sl.append(dict(pid=Path(p).name, z=int(z), has_tc=bool(has_tc), empty=bool(not wt.any()), contour=bool(m.any()), refused=False,
+                           tumor=bool(res['tumor']), level=res.get('level'), p_tumor=res['p_tumor'], seq=res['auto_sequence'],
+                           checks='|'.join(c['code'] for c in res['checks'])))
         per_pat.append(dict(pid=Path(p).name, slices_tc=n_tc, slices_with_contour=n_contour, refused_slices=refused,
                             risk=float(np.mean(risks)) if risks else None, dice_tc=float(np.mean(dices)) if dices else None,
                             empty_slices=n_empty, false_contour_empty=fc))
@@ -336,6 +351,7 @@ def brats_band(M, root, step=2, alpha=0.10, seed=0, log=print):
                mean_dice_tc=round(float(P.dice_tc.dropna().mean()), 3),
                false_contour_on_tumor_free_slices=round(float(P.false_contour_empty.sum() / max(P.empty_slices.sum(), 1)), 3),
                auto_sequence_counts=S.seq.value_counts().to_dict() if len(S) else {},
+               **_brats_extra(S, int(P.refused_slices.sum())),
                note='чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений')
     log('BraTS, полоса v2:', json.dumps(out, ensure_ascii=False))
     return out, P

@@ -114,6 +114,7 @@ R['new_images'] = extras.new_images(M, RES + '/extra_meta.csv', ORIG, OUT + '/do
 org_n = [(r.key, ORIG[r.key], 3) for r in tst[tst.label.astype(int) == 3].itertuples() if r.key in ORIG]
 org_t = [(r.key, ORIG[r.key], int(r.label)) for r in tst[tst.label.astype(int) < 3].itertuples() if r.key in ORIG]
 R['doctor_cases'] = extras.doctor_cases(M, mats, s_te, fidx, fM, org_n, org_t, OUT + '/doctor_kit', log=log)
+if os.path.exists(REPO + '/doctor_kit/README.txt'): shutil.copy(REPO + '/doctor_kit/README.txt', OUT + '/doctor_kit/README.txt')
 json.dump(R, open(OUT + '/extras.json', 'w'), ensure_ascii=False, indent=1, default=float)
 push({'results/stage2/extras.json': OUT + '/extras.json', 'results/stage2/normals_by_sequence.csv': OUT + '/normals_by_sequence.csv',
       'results/stage2/extras_log.txt': OUT + '/extras_log.txt', 'doctor_kit': OUT + '/doctor_kit'},
