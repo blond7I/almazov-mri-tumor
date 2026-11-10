@@ -1,34 +1,26 @@
-18:39:24 Скачиваю архив организаторов...
-18:39:41 Скачиваю Figshare 3381290...
-18:39:46 Скачиваю Figshare 3381293...
-18:39:52 Скачиваю Figshare 3381296...
-18:39:59 Скачиваю Figshare 3381302...
-18:40:50 Figshare собран: 3064 срезов
-18:40:52 Сверка порядка Figshare (корреляция с картинками обучения): min 0.9996
-18:40:56 Исходных снимков прочитано: 1212 из 1212 за 4 с
-18:41:09 Модели: cls×3 seg×4; calib=есть
-18:41:29 Здоровые снимки теста по режимам: {"FLAIR": {"n": 26, "refused": 26, "answered": 0, "said_tumor": 0, "said_tumor_ci": [null, null], "false_contour": 0, "false_contour_ci": [null, null], "review_zones_per_image": null, "correct_or_refused": 26, "correct_or_refused_share": 1.0}, "T1": {"n": 21, "refused": 0, "answered": 21, "said_tumor": 3, "said_tumor_ci": [0.05, 0.346], "false_contour": 1, "false_contour_ci": [0.008, 0.227], "review_zones_per_image": 0.381, "correct_or_refused": 18, "correct_or_refused_share": 0.857}, "T2": {"n": 23, "refused": 21, "answered": 2, "said_tumor": 0, "said_tumor_ci": [0.0, 0.658], "false_contour": 0, "false_contour_ci": [0.0, 0.658], "review_zones_per_image": 0.0, "correct_or_refused": 23, "correct_or_refused_share": 1.0}, "КТ": {"n": 10, "refused": 10, "answered": 0, "said_tumor": 0, "said_tumor_ci": [null, null], "false_contour": 0, "false_contour_ci": [null, null], "review_zones_per_image": null, "correct_or_refused": 10, "correct_or_refused_share": 1.0}, "другое/не ясно": {"n": 9, "refused": 3, "answered": 6, "said_tumor": 0, "said_tumor_ci": [0.0, 0.39], "false_contour": 0, "false_contour_ci": [0.0, 0.39], "review_zones_per_image": 0.333, "correct_or_refused": 9, "correct_or_refused_share": 1.0}, "все": {"n": 89, "refused": 60, "answered": 29, "said_tumor": 3, "said_tumor_ci": [0.036, 0.264], "false_contour": 1, "false_contour_ci": [0.006, 0.172], "review_zones_per_image": 0.345, "correct_or_refused": 86, "correct_or_refused_share": 0.966}}
-18:41:42 Новые снимки: {"n": 92, "accuracy": 0.783, "accuracy_ci": [0.688, 0.855], "tumor_suspected": 31, "tumors": 36, "type_correct": {"Глиома": "7/17", "Менингиома": "6/12", "Опухоль гипофиза": "4/7"}, "contour_found": 22, "normal_false_alarm": 1, "normals": 56, "refused": 26, "asks_review": 60}
-18:44:50 Прогон прототипа на кандидатах: 1281 снимков за 187 с
-18:44:50 Случаи для врача:      file        category       true_label      system_pred  dice_vs_doctor_mask
+06:25:41 Скачиваю архив организаторов...
+06:25:55 Скачиваю Figshare 3381290...
+06:25:58 Скачиваю Figshare 3381293...
+06:26:02 Скачиваю Figshare 3381296...
+06:26:04 Скачиваю Figshare 3381302...
+06:27:01 Figshare собран: 3064 срезов
+06:27:03 Сверка порядка Figshare (корреляция с картинками обучения): min 0.9996
+06:27:07 Исходных снимков прочитано: 1212 из 1212 за 4 с
+06:27:25 Модели: cls×5 seg×4; calib=есть
+06:27:54 Здоровые снимки теста по режимам: {"FLAIR": {"n": 26, "refused": 26, "answered": 0, "said_tumor": 0, "said_tumor_ci": [null, null], "false_contour": 0, "false_contour_ci": [null, null], "review_zones_per_image": null, "correct_or_refused": 26, "correct_or_refused_share": 1.0}, "T1": {"n": 21, "refused": 0, "answered": 21, "said_tumor": 3, "said_tumor_ci": [0.05, 0.346], "false_contour": 1, "false_contour_ci": [0.008, 0.227], "review_zones_per_image": 0.381, "correct_or_refused": 18, "correct_or_refused_share": 0.857}, "T2": {"n": 23, "refused": 21, "answered": 2, "said_tumor": 0, "said_tumor_ci": [0.0, 0.658], "false_contour": 0, "false_contour_ci": [0.0, 0.658], "review_zones_per_image": 0.0, "correct_or_refused": 23, "correct_or_refused_share": 1.0}, "КТ": {"n": 10, "refused": 10, "answered": 0, "said_tumor": 0, "said_tumor_ci": [null, null], "false_contour": 0, "false_contour_ci": [null, null], "review_zones_per_image": null, "correct_or_refused": 10, "correct_or_refused_share": 1.0}, "другое/не ясно": {"n": 9, "refused": 3, "answered": 6, "said_tumor": 0, "said_tumor_ci": [0.0, 0.39], "false_contour": 0, "false_contour_ci": [0.0, 0.39], "review_zones_per_image": 0.333, "correct_or_refused": 9, "correct_or_refused_share": 1.0}, "все": {"n": 89, "refused": 60, "answered": 29, "said_tumor": 3, "said_tumor_ci": [0.036, 0.264], "false_contour": 1, "false_contour_ci": [0.006, 0.172], "review_zones_per_image": 0.345, "correct_or_refused": 86, "correct_or_refused_share": 0.966}}
+06:28:12 Новые снимки: {"n": 92, "accuracy": 0.848, "accuracy_ci": [0.761, 0.907], "tumor_suspected": 31, "tumors": 36, "type_correct": {"Глиома": "10/17", "Менингиома": "8/12", "Опухоль гипофиза": "4/7"}, "contour_found": 22, "normal_false_alarm": 0, "normals": 56, "refused": 26, "asks_review": 66}
+06:32:34 Прогон прототипа на кандидатах: 1281 снимков за 262 с
+06:32:35 Случаи для врача:      file        category       true_label      system_pred  dice_vs_doctor_mask
   case_01 уверена и права           Глиома           Глиома                0.920
   case_02   здоровый срез      Опухоли нет      Опухоли нет                  NaN
   case_03  широкая полоса           Глиома           Глиома                0.711
-  case_04  ошибка системы       Менингиома Опухоль гипофиза                0.868
+  case_04  ошибка системы       Менингиома Опухоль гипофиза                0.925
   case_05 уверена и права       Менингиома       Менингиома                0.913
-  case_06     контура нет           Глиома           Глиома                0.000
+  case_06     контура нет           Глиома           Глиома                  NaN
   case_07  зона просмотра           Глиома           Глиома                0.682
   case_08  широкая полоса           Глиома           Глиома                0.850
   case_09 уверена и права Опухоль гипофиза Опухоль гипофиза                0.927
-  case_10    тип неуверен Опухоль гипофиза           Глиома                0.000
-scratch_1          с нуля Опухоль гипофиза Опухоль гипофиза                0.881
-scratch_2          с нуля           Глиома           Глиома                0.788
+  case_10    тип неуверен           Глиома       Менингиома                0.685
+scratch_1          с нуля           Глиома           Глиома                0.814
+scratch_2          с нуля Опухоль гипофиза Опухоль гипофиза                0.881
 scratch_3          с нуля       Менингиома       Менингиома                0.903
-18:46:04 Скачиваю MSD Task01_BrainTumour (~7 ГБ)...
-19:02:53 Распаковываю...
-19:03:38   BraTS: 1/49 пациентов, 10 с
-19:05:16   BraTS: 11/49 пациентов, 109 с
-19:06:57   BraTS: 21/49 пациентов, 210 с
-19:08:38   BraTS: 31/49 пациентов, 311 с
-19:10:19   BraTS: 41/49 пациентов, 411 с
-19:11:41 BraTS, полоса v2: {"patients": 49, "slices": 3281, "refused_slices": 1066, "mean_risk": 0.3059, "risk_ci": [0.1479, 0.4875], "coverage": 0.6941, "share_patients_risk_gt_alpha": 0.455, "slices_with_tc": 883, "contour_found_on_tc_slices": 0.17, "mean_dice_tc": 0.09, "false_contour_on_tumor_free_slices": 0.235, "auto_sequence_counts": {"T1": 1119, "T2": 993, "FLAIR": 100, "КТ": 3}, "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений"}
