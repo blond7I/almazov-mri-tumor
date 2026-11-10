@@ -354,4 +354,4 @@ def brats_band(M, root, step=2, alpha=0.10, seed=0, log=print):
                **_brats_extra(S, int(P.refused_slices.sum())),
                note='чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений')
     log('BraTS, полоса v2:', json.dumps(out, ensure_ascii=False))
-    return out, P
+    return out, P, S

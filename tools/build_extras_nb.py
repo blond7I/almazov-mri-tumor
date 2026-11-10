@@ -124,10 +124,12 @@ code(r"""
 # 4) полоса v2 на BraTS (T1 с контрастом) — по протоколу (docs/stage2_protocol.md, «Отклонения»)
 from almazov import brats
 root = brats.download('/tmp/brats', log=log)
-R['brats_band'], P = extras.brats_band(M, root, step=2, log=log)
+R['brats_band'], P, S = extras.brats_band(M, root, step=2, log=log)
 P.to_csv(OUT + '/brats_band_patients.csv', index=False)
+S.to_csv(OUT + '/brats_band_slices.csv', index=False)
 json.dump(R, open(OUT + '/extras.json', 'w'), ensure_ascii=False, indent=1, default=float)
 push({'results/stage2/extras.json': OUT + '/extras.json', 'results/stage2/brats_band_patients.csv': OUT + '/brats_band_patients.csv',
+      'results/stage2/brats_band_slices.csv': OUT + '/brats_band_slices.csv',
       'results/stage2/extras_log.txt': OUT + '/extras_log.txt'}, 'Stage-2 extras: uncertainty band v2 on BraTS T1c (run on Kaggle)')
 print('Готово')
 """)
