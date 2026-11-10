@@ -180,6 +180,12 @@ push({'results/stage2/stage2b_summary.json': OUT + '/stage2b_summary.json', 'res
 for p in glob.glob(OUT + '/brisc_maps_*.npz') + glob.glob(OUT + '/w_*.pt'): os.remove(p)
 print('Готово: stage2b_results.zip, stage2b_weights.zip')
 """)
+if '--phase-a-only' in sys.argv:
+    # повторная проверка итогового прототипа (веса из репозитория): только часть A, без обучения кандидатов
+    cells = cells[:4]
+    cells[0]['source'] = cells[0]['source'].replace('проверка прототипа и кандидаты с искажениями качества', 'проверка итогового прототипа (только часть A)')
+    cells[3]['source'] = cells[3]['source'].replace("'BRISC 2025: mapping to our split and current prototype on our test and external images (run on Kaggle)'",
+                                                    "'BRISC 2025: final prototype (v3 weights) on our test and external images (run on Kaggle)'")
 nb = {"cells": cells, "metadata": {"kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
       "language_info": {"name": "python"}, "kaggle": {"accelerator": "gpu", "isInternetEnabled": True, "isGpuEnabled": True}},
       "nbformat": 4, "nbformat_minor": 4}
