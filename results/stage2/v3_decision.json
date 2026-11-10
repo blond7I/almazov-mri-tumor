@@ -1,0 +1,98 @@
+{
+ "rules": "docs/stage2_protocol.md",
+ "seg": {
+  "current": {
+   "members": [
+    "seg_stage1",
+    "seg_s1",
+    "seg_s2",
+    "seg_s3"
+   ],
+   "val_dice": 0.8301183824604322,
+   "test_dice": 0.8047501789211775
+  },
+  "current+B": {
+   "members": [
+    "seg_stage1",
+    "seg_s1",
+    "seg_s2",
+    "seg_s3",
+    "seg_b1",
+    "seg_b2"
+   ],
+   "val_dice": 0.8294365227118095,
+   "test_dice": 0.8053680392104591
+  }
+ },
+ "cls": {
+  "current": {
+   "members": [
+    "cls_stage1",
+    "cls_s1",
+    "cls_s2"
+   ],
+   "val_macro_f1": 0.9534210902306476,
+   "test_acc": 0.9243002544529262,
+   "test_tumor_sens": 0.9879032258064516
+  },
+  "current+B": {
+   "members": [
+    "cls_stage1",
+    "cls_s1",
+    "cls_s2",
+    "cls_b1",
+    "cls_b2"
+   ],
+   "val_macro_f1": 0.9526697024572972,
+   "test_acc": 0.9243002544529262,
+   "test_tumor_sens": 0.9887096774193549
+  },
+  "current+C": {
+   "members": [
+    "cls_stage1",
+    "cls_s1",
+    "cls_s2",
+    "cls_n1",
+    "cls_n2"
+   ],
+   "val_macro_f1": 0.9585896338204046,
+   "test_acc": 0.9293893129770993,
+   "test_tumor_sens": 0.9862903225806452
+  },
+  "current+B+C": {
+   "members": [
+    "cls_stage1",
+    "cls_s1",
+    "cls_s2",
+    "cls_b1",
+    "cls_b2",
+    "cls_n1",
+    "cls_n2"
+   ],
+   "val_macro_f1": 0.9558677139823927,
+   "test_acc": 0.928117048346056,
+   "test_tumor_sens": 0.9870967741935484
+  }
+ },
+ "decision": {
+  "seg_b": false,
+  "cls_b": false,
+  "cls_n": true,
+  "note": "C решён по его правилу на normals_experiment.json (вариант «текущие + кандидаты»); здесь он только применяется"
+ },
+ "final": {
+  "seg": [
+   "seg_stage1",
+   "seg_s1",
+   "seg_s2",
+   "seg_s3"
+  ],
+  "cls": [
+   "cls_stage1",
+   "cls_s1",
+   "cls_s2",
+   "cls_n1",
+   "cls_n2"
+  ]
+ }
+}

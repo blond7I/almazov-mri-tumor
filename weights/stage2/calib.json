@@ -1,5 +1,5 @@
 {
- "temperature": 0.75,
+ "temperature": 0.7,
  "screen_thr": 0.5,
  "contour_thr": 0.5,
  "min_area": 30,
@@ -11,7 +11,7 @@
  "low_conf": 0.6,
  "band_family": "max",
  "band_r": 2,
- "conformal_qhat": 0.18188142776489258,
- "defer_conf_thr": 0.8931745886802673,
- "fitted_on": "валидация (Figshare 38 пациентов для границы; 1419 снимков для температуры и конформных множеств)"
+ "conformal_qhat": 0.2070310115814209,
+ "defer_conf_thr": 0.8669790625572205,
+ "fitted_on": "stage2 v3: seg_stage1, seg_s1, seg_s2, seg_s3, cls_stage1, cls_s1, cls_s2, cls_n1, cls_n2"
 }

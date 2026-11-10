@@ -54,7 +54,29 @@
    ],
    "sha256": "49a4448bab55a0862aa30d5382abf2dafdcea02d189f4ed7bbd9f18f0638bde2",
    "mb": 49.0
+  },
+  {
+   "tag": "cls_n1",
+   "kind": "cls",
+   "parts": [
+    "cls_n1.pt.part0",
+    "cls_n1.pt.part1",
+    "cls_n1.pt.part2"
+   ],
+   "sha256": "43f150384c750e52771d0125880612b63d18d78c5f8fdfab01366d4b3245e40f",
+   "mb": 47.2
+  },
+  {
+   "tag": "cls_n2",
+   "kind": "cls",
+   "parts": [
+    "cls_n2.pt.part0",
+    "cls_n2.pt.part1",
+    "cls_n2.pt.part2"
+   ],
+   "sha256": "0e940a54275021ed113512010865e31888223c7e30e33cc4619040f68dcdc209",
+   "mb": 47.2
   }
  ],
- "note": "Новые обучения этапа 2 (тот же рецепт, другие seed), float16"
+ "note": "Этап 2: новые обучения (seed) + принятые по правилам кандидаты B (BRISC + искажения) и C (здоровые T1 BRISC); float16"
 }
