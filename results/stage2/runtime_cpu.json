@@ -1,0 +1,13 @@
+{
+ "note": "замер времени анализа одного среза без видеокарты, итоговый ансамбль cls×5 seg×4",
+ "models": "cls×5 seg×4; calib=есть",
+ "device": "cpu",
+ "threads": 2,
+ "load_models_s": 34.5,
+ "slices_measured": 5,
+ "per_slice_s_median": 2.05,
+ "per_slice_s_mean": 2.11,
+ "first_slice_s": 5.36,
+ "how": "python -I: pipeline.load_models('.', device='cpu'); pipeline.analyze(M, x) по снимкам doctor_kit/cases/*.png; первый срез (прогрев) исключён",
+ "caveat": "контейнер с двумя ядрами; на ноутбуке с большим числом ядер быстрее, но мы этого не измеряли"
+}

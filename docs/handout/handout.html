@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Просьба о взгляде врача</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 210mm; height: 297mm;
+    padding: 12mm 14mm 8mm;
+    font-family: "Inter", "DejaVu Sans", sans-serif;
+    font-size: 9.1pt; line-height: 1.38; color: #16282c;
+    background: #fff;
+    display: flex; flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+  .eyebrow {
+    font-size: 7.6pt; letter-spacing: .13em; text-transform: uppercase;
+    color: #3f7c82; font-weight: 600; margin-bottom: 3.5mm;
+  }
+  h1 {
+    font-family: "Inter Display", "Inter", sans-serif;
+    font-size: 18.5pt; line-height: 1.1; font-weight: 600;
+    letter-spacing: -.015em; margin: 0 0 3mm;
+  }
+  h1 em { font-style: normal; color: #0d6a72; }
+  .lede { font-size: 9.9pt; line-height: 1.42; color: #2d4349; max-width: 174mm; }
+  .rule { height: 2px; background: #0d6a72; margin: 4.5mm 0 4.5mm; width: 22mm; }
+  .cols { display: flex; gap: 10mm; flex: 1; }
+  .col { flex: 1; min-width: 0; }
+  h2 {
+    font-size: 8pt; letter-spacing: .1em; text-transform: uppercase;
+    color: #0d6a72; font-weight: 700; margin: 0 0 2mm;
+    padding-bottom: 1.2mm; border-bottom: 1px solid #d3e3e4;
+  }
+  h2 + * { margin-top: 0; }
+  .block { margin-bottom: 4.1mm; }
+  ul { margin: 0; padding-left: 4.6mm; }
+  li { margin-bottom: 1.1mm; }
+  li::marker { color: #6aa3a8; }
+  ol { margin: 0; padding-left: 5.2mm; }
+  ol li { margin-bottom: 1.2mm; }
+  .ask {
+    background: #f1f7f7; border-left: 2.5px solid #0d6a72;
+    padding: 3.2mm 3.8mm; margin-bottom: 4.2mm;
+  }
+  .ask strong { display: block; font-size: 10.4pt; margin-bottom: 1.2mm; }
+  .ask span { color: #44595e; }
+  .no { color: #5b4a3d; }
+  .no li::marker { color: #b08968; }
+  .foot {
+    margin-top: 2.5mm; padding-top: 3.2mm; border-top: 1px solid #d3e3e4;
+    display: flex; align-items: flex-start; gap: 7mm;
+  }
+  .foot .who { flex: 1; }
+  .foot .name { font-size: 10.8pt; font-weight: 600; margin-bottom: 1mm; }
+  .foot .meta { color: #52666b; font-size: 9pt; line-height: 1.5; }
+  .tg { font-size: 13pt; font-weight: 600; color: #0d6a72; letter-spacing: -.01em; }
+  .qr { text-align: center; width: 27mm; }
+  .qr img { width: 27mm; height: 27mm; display: block; }
+  .qr figcaption { font-size: 6.8pt; color: #6a7d81; margin-top: 1.2mm; letter-spacing: .02em; }
+  .data {
+    font-size: 8.2pt; color: #52666b; margin-top: 3.5mm;
+    padding: 2.6mm 3.2mm; background: #faf8f5; border: 1px solid #ece4da;
+  }
+  .num { font-variant-numeric: tabular-nums; font-weight: 600; color: #0d6a72; }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">Студенческий проект · финал хакатона «Медицина 2050», Центр Алмазова</div>
+  <h1>Нужен взгляд рентгенолога<br>на прототип — <em>30–40 минут</em></h1>
+  <p class="lede">
+    Прототип находит объёмное образование на срезе МРТ головного мозга, показывает, где сомневается в границе,
+    и готовит проект заключения, который врач правит и подписывает. Нам важно услышать от того, кто читает снимки
+    каждый день, что в нём мешает работать.
+  </p>
+  <div class="rule"></div>
+
+  <div class="cols">
+    <div class="col">
+      <div class="block">
+        <h2>Что система делает</h2>
+        <ul>
+          <li>Отвечает, есть ли на срезе объёмное образование, и обводит его контуром.</li>
+          <li>Рисует полосу неуверенности вокруг контура — зону, где граница может проходить иначе.</li>
+          <li>Предполагает тип: глиома, менингиома или опухоль гипофиза — справочно.</li>
+          <li>Отклоняет снимки не своего типа (T2, FLAIR, КТ), а не объявляет их здоровыми.</li>
+          <li>Говорит «нужен просмотр», когда сама себе не доверяет.</li>
+          <li>Собирает проект заключения из измерений по шаблону, без языковой модели, и сверяет правки врача с анализом.</li>
+          <li>Принимает серию DICOM целиком: миллиметры, сторона пациента, ключевой срез.</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h2>Чего мы не утверждаем</h2>
+        <ul class="no">
+          <li>Это <strong>не медицинское изделие</strong> и не диагноз. Решение всегда за врачом.</li>
+          <li>Система знает три типа опухолей. Метастазы, лимфому, абсцесс она не различает.</li>
+          <li>На снимках из незнакомой клиники работает заметно хуже — мы это измерили и показываем.</li>
+          <li>Экономию времени не обещаем — её и хотим измерить с вами.</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h2>Как мы себя проверяли</h2>
+        <ul>
+          <li>У 77% снимков официального теста нашлась копия в обучении — тест пересобран без копий: честные 93% вместо красивых 96%.</li>
+          <li>На внешнем наборе BRISC 2025 с врачебной разметкой: на 540 здоровых снимках — ни одного «опухоль найдена».</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="ask">
+        <strong>О чём просим</strong>
+        <span>30–40 минут с 14 по 17 ноября — очно в Петербурге, с нашим ноутбуком, или по видеосвязи. Подойдёт и 15 минут, если больше не выйдет.</span>
+      </div>
+      <div class="block">
+        <h2>Что будет происходить</h2>
+        <ol>
+          <li>Три снимка вы обводите сами, без подсказок системы — мы засекаем время.</li>
+          <li>Десять снимков смотрите вместе с системой: правите контур, порог, текст заключения. Мы не подсказываем.</li>
+          <li>Десять минут — пятьдесят снимков: вы называете режим МРТ и плоскость, мы сверяем со своей разметкой.</li>
+          <li>Листаем двадцать случаев, где система ошиблась, и вы говорите, почему.</li>
+          <li>Три вопроса: что мешало, что оказалось полезным, стали бы пользоваться.</li>
+        </ol>
+      </div>
+      <div class="block">
+        <h2>Что получите вы</h2>
+        <ul>
+          <li>Благодарность с именем и должностью в презентации финала и в открытом репозитории — или анонимно, как удобнее.</li>
+          <li>Итоги всех измерений: где прототип ошибается, по типам опухолей и по режимам.</li>
+          <li>Доступ к прототипу и к коду — он открыт целиком.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <div class="name">Богдан · команда InTeam</div>
+      <div class="meta">
+        Студент 1 курса ИТМО, биотехнологии.<br>
+        Telegram: <span class="tg">@blond7I</span><br>
+        Код, веса и сырые результаты: github.com/blond7I/almazov-mri-tumor
+      </div>
+      <div class="data">
+        <strong>Данные.</strong> Только открытые обезличенные наборы (Figshare, BRISC 2025, набор организаторов хакатона).
+        Реальных пациентов и персональных данных нет — ничего из вашей клиники нам не нужно.
+        Точность на честном тесте без копий — <span class="num">93%</span>; на снимках, непохожих на обучающие, — <span class="num">85%</span>, и слабее всего на глиомах.
+      </div>
+    </div>
+    <figure class="qr">
+      <img src="qr_tg.png" alt="">
+      <figcaption>написать в Telegram</figcaption>
+    </figure>
+  </div>
+
+</body>
+</html>
