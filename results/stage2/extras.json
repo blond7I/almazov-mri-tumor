@@ -170,6 +170,28 @@
    "FLAIR": 100,
    "КТ": 3
   },
+  "ood_warned_slices": 0,
+  "refused_or_warned_share": 0.325,
+  "answered_without_any_warning": 2215,
+  "levels_on_tumor_free_slices": {
+   "n": 871,
+   "found": 120,
+   "review": 200,
+   "none": 551
+  },
+  "levels_on_tc_slices": {
+   "n": 883,
+   "found": 91,
+   "review": 188,
+   "none": 604
+  },
+  "levels_on_tumor_free_slices_no_warning": {
+   "n": 871,
+   "found": 120,
+   "review": 200,
+   "none": 551
+  },
   "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений"
- }
+ },
+ "brats_band_models": "cls×5 seg×4; calib=есть"
 }
