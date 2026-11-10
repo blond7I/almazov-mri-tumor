@@ -1,91 +1,91 @@
 {
- "models": "cls×3 seg×4; calib=есть",
+ "models": "cls×5 seg×4; calib=есть",
  "note": "тест Figshare, экспертные маски; Grad-CAM ансамбля для итогового класса; стирание = inpainting Telea маски +5 пикс.",
  "all": {
   "n": 561,
-  "pointing_hit": 0.708,
+  "pointing_hit": 0.695,
   "pointing_hit_ci": [
-   0.669,
-   0.744
+   0.656,
+   0.732
   ],
   "pointing_random": 0.141,
-  "attention_share_in_tumor_median": 0.084,
+  "attention_share_in_tumor_median": 0.082,
   "tumor_area_share_median": 0.026,
-  "enrichment_median": 3.29,
+  "enrichment_median": 3.25,
   "tumor_still_detected_after_erase": 1.0,
-  "same_type_after_erase": 0.863,
-  "p_top_drop_mean": 0.132,
-  "p_top_drop_ctrl_mean": 0.008,
-  "share_big_drop": 0.257
+  "same_type_after_erase": 0.859,
+  "p_top_drop_mean": 0.137,
+  "p_top_drop_ctrl_mean": 0.007,
+  "share_big_drop": 0.278
  },
  "by_class": {
   "Глиома": {
    "n": 253,
-   "pointing_hit": 0.668,
+   "pointing_hit": 0.68,
    "pointing_hit_ci": [
-    0.608,
-    0.723
+    0.62,
+    0.734
    ],
    "pointing_random": 0.178,
-   "attention_share_in_tumor_median": 0.1,
+   "attention_share_in_tumor_median": 0.103,
    "tumor_area_share_median": 0.045,
-   "enrichment_median": 2.46,
+   "enrichment_median": 2.55,
    "tumor_still_detected_after_erase": 1.0,
-   "same_type_after_erase": 0.87,
-   "p_top_drop_mean": 0.109,
-   "p_top_drop_ctrl_mean": 0.005,
-   "share_big_drop": 0.225
+   "same_type_after_erase": 0.858,
+   "p_top_drop_mean": 0.108,
+   "p_top_drop_ctrl_mean": 0.0,
+   "share_big_drop": 0.241
   },
   "Менингиома": {
    "n": 137,
-   "pointing_hit": 0.92,
+   "pointing_hit": 0.927,
    "pointing_hit_ci": [
-    0.862,
-    0.955
+    0.871,
+    0.96
    ],
    "pointing_random": 0.146,
-   "attention_share_in_tumor_median": 0.14,
+   "attention_share_in_tumor_median": 0.142,
    "tumor_area_share_median": 0.029,
-   "enrichment_median": 4.45,
+   "enrichment_median": 4.44,
    "tumor_still_detected_after_erase": 1.0,
-   "same_type_after_erase": 0.715,
-   "p_top_drop_mean": 0.308,
-   "p_top_drop_ctrl_mean": 0.003,
-   "share_big_drop": 0.555
+   "same_type_after_erase": 0.693,
+   "p_top_drop_mean": 0.338,
+   "p_top_drop_ctrl_mean": 0.007,
+   "share_big_drop": 0.628
   },
   "Опухоль гипофиза": {
    "n": 171,
-   "pointing_hit": 0.596,
+   "pointing_hit": 0.532,
    "pointing_hit_ci": [
-    0.522,
-    0.667
+    0.457,
+    0.605
    ],
    "pointing_random": 0.082,
-   "attention_share_in_tumor_median": 0.041,
+   "attention_share_in_tumor_median": 0.042,
    "tumor_area_share_median": 0.013,
-   "enrichment_median": 3.4,
+   "enrichment_median": 3.26,
    "tumor_still_detected_after_erase": 1.0,
-   "same_type_after_erase": 0.971,
-   "p_top_drop_mean": 0.026,
-   "p_top_drop_ctrl_mean": 0.023,
-   "share_big_drop": 0.064
+   "same_type_after_erase": 0.994,
+   "p_top_drop_mean": 0.019,
+   "p_top_drop_ctrl_mean": 0.021,
+   "share_big_drop": 0.053
   }
  },
  "correct_only": {
-  "n": 526,
-  "pointing_hit": 0.717,
+  "n": 529,
+  "pointing_hit": 0.703,
   "pointing_hit_ci": [
-   0.677,
-   0.754
+   0.663,
+   0.741
   ],
   "pointing_random": 0.142,
-  "attention_share_in_tumor_median": 0.085,
+  "attention_share_in_tumor_median": 0.084,
   "tumor_area_share_median": 0.026,
-  "enrichment_median": 3.3,
+  "enrichment_median": 3.25,
   "tumor_still_detected_after_erase": 1.0,
-  "same_type_after_erase": 0.859,
-  "p_top_drop_mean": 0.14,
-  "p_top_drop_ctrl_mean": 0.007,
-  "share_big_drop": 0.262
+  "same_type_after_erase": 0.858,
+  "p_top_drop_mean": 0.143,
+  "p_top_drop_ctrl_mean": 0.006,
+  "share_big_drop": 0.284
  }
 }
