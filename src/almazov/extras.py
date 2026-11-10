@@ -279,17 +279,22 @@ def doctor_cases(M, mats, s_te, fidx, fM, org_normals, org_tumors, out_dir, seed
 
 # ---------------------------------------------------------------- 4. полоса v2 на BraTS (T1 с контрастом)
 def _brats_extra(S, refused):
-    """Сколько чужих срезов система сама пометила (отказ или предупреждение «не похож на обучение») и что говорит правило двух сигналов."""
+    """Понимает ли система, что данные чужие: сколько срезов она отклонила, на скольких предупредила о режиме МРТ
+    (код проверки «sequence») и что говорит правило двух сигналов на срезах, на которые она ответила.
+    Пометка «low_resolution» стоит на всех срезах BraTS (240x240) и предупреждением о чужих данных не считается."""
     if not len(S):
         return {}
-    ood = S.checks.str.contains('ood')
+    warn = S.checks.fillna('').str.contains('sequence')
     n_all = len(S) + refused
     lv = lambda d: {k: int((d.level == k).sum()) for k in ('found', 'review', 'none')}
-    return dict(ood_warned_slices=int(ood.sum()), refused_or_warned_share=round(float((refused + ood.sum()) / n_all), 3),
-                answered_without_any_warning=int((~ood).sum()),
+    return dict(answered_slices=int(len(S)), sequence_warned_slices=int(warn.sum()),
+                refused_or_warned_share=round(float((refused + warn.sum()) / n_all), 3),
+                answered_without_domain_warning=int((~warn).sum()),
+                answered_without_domain_warning_share=round(float((~warn).sum() / n_all), 3),
                 levels_on_tumor_free_slices=dict(n=int(S['empty'].sum()), **lv(S[S['empty']])),
                 levels_on_tc_slices=dict(n=int(S.has_tc.sum()), **lv(S[S.has_tc])),
-                levels_on_tumor_free_slices_no_warning=dict(n=int((S['empty'] & ~ood).sum()), **lv(S[S['empty'] & ~ood])))
+                levels_on_tumor_free_slices_no_warning=dict(n=int((S['empty'] & ~warn).sum()), **lv(S[S['empty'] & ~warn])),
+                levels_on_tc_slices_no_warning=dict(n=int((S.has_tc & ~warn).sum()), **lv(S[S.has_tc & ~warn])))
 
 
 def brats_band(M, root, step=2, alpha=0.10, seed=0, log=print):

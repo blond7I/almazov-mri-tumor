@@ -170,9 +170,11 @@
    "FLAIR": 100,
    "КТ": 3
   },
-  "ood_warned_slices": 0,
-  "refused_or_warned_share": 0.325,
-  "answered_without_any_warning": 2215,
+  "answered_slices": 2215,
+  "sequence_warned_slices": 559,
+  "refused_or_warned_share": 0.495,
+  "answered_without_domain_warning": 1656,
+  "answered_without_domain_warning_share": 0.505,
   "levels_on_tumor_free_slices": {
    "n": 871,
    "found": 120,
@@ -186,12 +188,19 @@
    "none": 604
   },
   "levels_on_tumor_free_slices_no_warning": {
-   "n": 871,
-   "found": 120,
-   "review": 200,
-   "none": 551
+   "n": 707,
+   "found": 115,
+   "review": 190,
+   "none": 402
   },
-  "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений"
+  "levels_on_tc_slices_no_warning": {
+   "n": 660,
+   "found": 90,
+   "review": 164,
+   "none": 406
+  },
+  "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений",
+  "note_levels": "блок про отказы, предупреждения и уровни пересчитан из brats_band_slices.csv (10.11): в первой версии искался несуществующий код проверки «ood»"
  },
  "brats_band_models": "cls×5 seg×4; calib=есть"
 }
