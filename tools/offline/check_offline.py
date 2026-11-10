@@ -11,7 +11,10 @@ root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 t0 = time.time()
 M = pipeline.load_models(root)
 print(f'Модели: {M.version} ({time.time() - t0:.0f} с)')
-assert len(M.seg) == 4 and len(M.cls) == 3, 'Ансамбль собран не полностью: скачайте репозиторий целиком (папка weights/)'
+import json  # noqa: E402
+man = json.load(open(os.path.join(root, 'weights', 'stage2', 'models.json'), encoding='utf-8'))['models']
+need_seg = 1 + sum(m['kind'] == 'seg' for m in man); need_cls = 1 + sum(m['kind'] == 'cls' for m in man)
+assert len(M.seg) == need_seg and len(M.cls) == need_cls, 'Ансамбль собран не полностью: скачайте репозиторий целиком (папка weights/)'
 for f in sorted(glob.glob(os.path.join(root, 'examples', '*.jpg'))):
     t = time.time()
     r = pipeline.analyze(M, f)
