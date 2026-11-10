@@ -92,6 +92,7 @@ ug = np.unique(grp); rs = np.random.RandomState(0); rs.shuffle(ug)
 half = set(ug[:len(ug) // 2])
 ntr = np.array([g in half for g in grp]); nho = ~ntr
 log(f'Внешние здоровые BRISC: {len(Xn)} (групп {len(ug)}); в обучение {ntr.sum()}, отложено {nho.sum()}')
+pd.DataFrame(dict(file=ext.file, group=grp, part=np.where(ntr, 'train_c', 'holdout'))).to_csv(OUT + '/brisc_normals_split.csv', index=False)
 """)
 code(r"""
 # обучение: тот же рецепт + искажения качества (как кандидаты B) + здоровые T1 BRISC; выбор эпохи — по нашей валидации
