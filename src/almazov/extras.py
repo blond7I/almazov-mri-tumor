@@ -279,15 +279,17 @@ def doctor_cases(M, mats, s_te, fidx, fM, org_normals, org_tumors, out_dir, seed
 
 # ---------------------------------------------------------------- 4. полоса v2 на BraTS (T1 с контрастом)
 def _brats_extra(S, refused):
-    """Понимает ли система, что данные чужие: сколько срезов она отклонила, на скольких предупредила о режиме МРТ
-    (код проверки «sequence») и что говорит правило двух сигналов на срезах, на которые она ответила.
-    Пометка «low_resolution» стоит на всех срезах BraTS (240x240) и предупреждением о чужих данных не считается."""
+    """Понимает ли система, что данные чужие: сколько срезов она отклонила, на скольких предупредила («ood» — снимок
+    не похож на обучение, «sequence» — сомнение в режиме МРТ) и что говорит правило двух сигналов на срезах, на которые
+    она ответила. Пометка «low_resolution» стоит на всех срезах BraTS (240x240) и предупреждением о чужих данных не считается."""
     if not len(S):
         return {}
-    warn = S.checks.fillna('').str.contains('sequence')
+    ck = S.checks.fillna('')
+    ood, seqw = ck.str.contains('ood'), ck.str.contains('sequence')
+    warn = ood | seqw
     n_all = len(S) + refused
     lv = lambda d: {k: int((d.level == k).sum()) for k in ('found', 'review', 'none')}
-    return dict(answered_slices=int(len(S)), sequence_warned_slices=int(warn.sum()),
+    return dict(answered_slices=int(len(S)), ood_warned_slices=int(ood.sum()), sequence_warned_slices=int(seqw.sum()),
                 refused_or_warned_share=round(float((refused + warn.sum()) / n_all), 3),
                 answered_without_domain_warning=int((~warn).sum()),
                 answered_without_domain_warning_share=round(float((~warn).sum() / n_all), 3),

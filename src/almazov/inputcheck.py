@@ -2,7 +2,8 @@
 
 Три уровня:
 1) детерминированные проверки (размер, цвет, пропорции, фон, наличие головы) — отказ с понятной причиной;
-2) «непохожесть» на обучающие данные по признакам классификатора (расстояние Махаланобиса; порог — 99.5-й перцентиль валидации);
+2) «непохожесть» на обучающие данные по признакам классификатора: расстояние до k-го ближайшего обучающего снимка
+   (порог — перцентиль валидации; подбор и проверка — notebooks/stage2_ood.ipynb), а без этих параметров — расстояние Махаланобиса;
 3) режим МРТ и плоскость (линейная модель на признаках ResNet-50, обучена на ручной разметке): T2/FLAIR -> «вне области применения»,
    а не «опухоли нет».
 """
@@ -43,14 +44,37 @@ def basic_checks(g, colorfulness, x256, head):
     return out
 
 
+def knn_embed(F, pca):
+    """Признаки (n, 2048) -> единичные векторы в пространстве главных компонент. pca: (1 + d, 2048), строка 0 — среднее."""
+    F = np.asarray(F, np.float32)
+    F = F / (np.linalg.norm(F, axis=1, keepdims=True) + 1e-8)
+    E = (F - pca[0]) @ pca[1:].T
+    return E / (np.linalg.norm(E, axis=1, keepdims=True) + 1e-8)
+
+
+def knn_distance(E, ref, k):
+    """Косинусное расстояние до k-го ближайшего опорного снимка (ref — единичные векторы обучающих снимков)."""
+    out = np.zeros(len(E), np.float32)
+    for s in range(0, len(E), 512):
+        sim = E[s:s + 512] @ ref.T
+        out[s:s + 512] = 1 - np.partition(sim, -k, axis=1)[:, -k]
+    return out
+
+
 class FeatureModels:
-    """Признаковые проверки: OOD (Махаланобис) и режим/плоскость (логистическая регрессия). Параметры — в weights/stage2/input_models.npz."""
+    """Признаковые проверки: «непохожесть» на обучение и режим/плоскость (логистическая регрессия).
+    Параметры — в weights/stage2/input_models.npz. «Непохожесть»: расстояние до k-го ближайшего обучающего снимка (ключи knn_*,
+    подбор и проверка — notebooks/stage2_ood.ipynb); если их нет — прежнее расстояние Махаланобиса."""
 
     def __init__(self, path):
         z = np.load(path, allow_pickle=True)
         self.mu, self.P = z['ood_mu'], z['ood_prec']
         self.thr = float(z['ood_thr'])
         self.pca = z['pca'] if 'pca' in z.files else None
+        self.knn = None
+        if 'knn_ref' in z.files:
+            self.knn = dict(ref=z['knn_ref'].astype(np.float32), pca=z['knn_pca'].astype(np.float32),
+                            k=int(z['knn_k']), thr=float(z['knn_thr']))
         self.heads = {}
         for k in ['seq', 'plane']:
             if f'{k}_W' in z.files:
@@ -63,6 +87,9 @@ class FeatureModels:
         d = f - self.mu
         dist = float(np.sqrt(max(d @ self.P @ d, 0)))
         res = dict(ood_distance=round(dist, 2), ood_thr=round(self.thr, 2), ood=dist > self.thr)
+        if self.knn is not None:
+            dk = float(knn_distance(knn_embed(feat[None], self.knn['pca']), self.knn['ref'], self.knn['k'])[0])
+            res.update(knn_distance=round(dk, 4), knn_thr=round(self.knn['thr'], 4), ood_mahalanobis=res['ood'], ood=dk > self.knn['thr'])
         for k, (W, b, cls, mu, sd) in self.heads.items():
             z = (feat.astype(np.float64) - mu) / sd
             s = z @ W.T + b

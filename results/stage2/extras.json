@@ -171,6 +171,7 @@
    "КТ": 3
   },
   "answered_slices": 2215,
+  "ood_warned_slices": 0,
   "sequence_warned_slices": 559,
   "refused_or_warned_share": 0.495,
   "answered_without_domain_warning": 1656,
@@ -200,7 +201,7 @@
    "none": 406
   },
   "note": "чужие данные: другие центры и томографы, срезы без черепа (skull-stripped), 240x240; калибровка и r — из calib.json без изменений",
-  "note_levels": "блок про отказы, предупреждения и уровни пересчитан из brats_band_slices.csv (10.11): в первой версии искался несуществующий код проверки «ood»"
+  "note_levels": "блок про отказы, предупреждения и уровни пересчитан из brats_band_slices.csv (12.11). Предупреждение «снимок не похож на обучение» (код ood, расстояние Махаланобиса, порог 99.5% валидации) не сработало ни на одном срезе BraTS"
  },
  "brats_band_models": "cls×5 seg×4; calib=есть"
 }
