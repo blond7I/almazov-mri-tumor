@@ -1,0 +1,57 @@
+Прогон notebooks/stage2_ood.ipynb на Kaggle (notebook0e2696ad8a, версия 5), 15.11.2026.
+Завершился успешно за 2031.8 с на GPU T4 x2. Отправка в GitHub не прошла: истёк срок действия
+fine-grained токена (7 дней с 8.11), поэтому файлы ood_check.json, ood_rows.csv, ood_brats_slices.csv
+остались в Output ноутбука; ниже — стандартный вывод прогона дословно.
+
+  71.1s  device cuda BRISC /kaggle/input/datasets/briscdataset/brisc2025/brisc2025
+ 157.2s  Figshare собран: 3064 срезов
+ 189.4s  Снимков сопоставлено с разбиением: 9150/9150; снимков вне разбиения: 2914
+ 194.2s  Разбиение: обучение 6159, валидация 1419, тест 1572 (уникальных 566); Figshare пациентов 152/38/43,
+         срезов 2004/499/561; маски на снимках организаторов: 5936
+ 206.9s  Модели: cls×5 seg×4; calib=есть
+ 315.5s  BRISC: 6000 снимков ({0: 1401, 1: 1635, 2: 1757, 3: 1207}), масок 4793, 68 с
+ 328.0s  Признаки: организаторы (9150, 2048), Figshare (3064, 2048), полный архив (2914, 2048), BRISC (6000, 2048), 121 с
+1854.2s  BraTS: срезов 3281, из них система отвечает на 2215 (ожидалось 3281 и 2215)
+1861.5s  {'val': 1918, 'test': 1127, 'test_org_unique': 566, 'test_figshare': 561, 'new_images_92': 92,
+         'brisc_holdout_normals': 629, 'brisc_train_c_normals': 518, 'brisc_tumors_our_test': 728,
+         'brisc_tumors_external': 6, 'brats_answered': 2215, 'brats_refused': 1066, 'brats_all': 3281,
+         'test_normals_T1': 21, 'test_normals_T2': 23, 'test_normals_FLAIR': 26, 'test_normals_КТ': 10}
+1862.2s  val                    n= 1918  предупреждений    48   2.5%  медиана расстояния 0.123
+1862.2s  test                   n= 1127  предупреждений    32   2.8%  медиана расстояния 0.1271
+1862.2s  test_org_unique        n=  566  предупреждений    18   3.2%  медиана расстояния 0.1278
+1862.2s  test_figshare          n=  561  предупреждений    14   2.5%  медиана расстояния 0.1267
+1862.2s  new_images_92          n=   92  предупреждений    10  10.9%  медиана расстояния 0.1231
+1862.2s  brisc_holdout_normals  n=  629  предупреждений    50   8.0%  медиана расстояния 0.1669
+1862.2s  brisc_train_c_normals  n=  518  предупреждений    37   7.1%  медиана расстояния 0.1708
+1862.2s  brisc_tumors_our_test  n=  728  предупреждений    20   2.8%  медиана расстояния 0.1242
+1862.2s  brisc_tumors_external  n=    6  предупреждений     0   0.0%  медиана расстояния 0.0985
+1862.2s  brats_answered         n= 2215  предупреждений   456  20.6%  медиана расстояния 0.1971
+1862.2s  brats_refused          n= 1066  предупреждений   317  29.7%  медиана расстояния 0.2854
+1862.2s  brats_all              n= 3281  предупреждений   773  23.6%  медиана расстояния 0.2283
+1862.2s  test_normals_T1        n=   21  предупреждений     1   4.8%  медиана расстояния 0.1748
+1862.2s  test_normals_T2        n=   23  предупреждений     0   0.0%  медиана расстояния 0.0811
+1862.2s  test_normals_FLAIR     n=   26  предупреждений     0   0.0%  медиана расстояния 0.0896
+1862.2s  test_normals_КТ        n=   10  предупреждений     0   0.0%  медиана расстояния 0.055
+1863.0s  [k=5]                   тест 3.0%,  BraTS (отвечает) 21.8%, BRISC отложенные здоровые  8.9%
+1863.6s  [k=20]                  тест 3.2%,  BraTS (отвечает) 19.1%, BRISC отложенные здоровые  7.1%
+1864.3s  [перцентиль 95]         тест 4.6%,  BraTS (отвечает) 23.9%, BRISC отложенные здоровые 10.0%
+1865.0s  [перцентиль 99]         тест 1.9%,  BraTS (отвечает) 16.4%, BRISC отложенные здоровые  6.2%
+1867.4s  [без главных компонент] тест 3.9%,  BraTS (отвечает) 43.3%, BRISC отложенные здоровые 20.0%
+1867.6s  [Махаланобис, 97.5]     тест 1.9%,  BraTS (отвечает)  2.1%, BRISC отложенные здоровые  0.8%
+1867.9s  Прежнее предупреждение (Махаланобис, порог 11.71): тест 0.0%, BraTS (отвечает) 0.0%
+1868.3s  brisc_our_test  {'not_warned': {'n': 710, 'type_accuracy': 0.9563, 'mean_dice': 0.7937},
+                         'warned':     {'n':  20, 'type_accuracy': 0.45,   'mean_dice': 0.6015}}
+1868.3s  brisc_external  {'not_warned': {'n': 879, 'type_accuracy': 0.992,  'mean_dice': 0.8289},
+                         'warned':     {'n':  87, 'type_accuracy': 0.931,  'mean_dice': None}}
+1870.3s  new_images_92   {'warned':     {'n':  10, 'type_accuracy': 0.7},
+                         'not_warned': {'n':  82, 'type_accuracy': 0.8659}}
+1870.3s  BraTS по пациентам и по ошибкам: {'patients': 49, 'median_patient_rate': 0.1818,
+         'patients_with_majority_warned': 1, 'warned_on_tc_slices': 0.2129, 'warned_on_tumor_free_slices': 0.271,
+         'wrong_none_on_tc_without_warning': 548, 'wrong_none_on_tc_total': 604,
+         'found_on_tumor_free_without_warning': 63, 'found_on_tumor_free_total': 120}
+1870.3s  Правило: тест 2.8% <= 5% — да; BraTS 20.6% >= 50% — НЕТ => ОТКЛОНЕНО
+1904.2s  Не удалось отправить в GitHub (попытка 1): Authentication failed (истёк токен)
+1953.1s  Не удалось отправить в GitHub (попытка 2): Authentication failed (истёк токен)
+2001.9s  Не удалось отправить в GitHub (попытка 3): Authentication failed (истёк токен)
+2021.7s  Результаты остаются в Output (вкладка Output ноутбука)
+2021.7s  Готово
